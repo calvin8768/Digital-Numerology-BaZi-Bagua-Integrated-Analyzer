@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="docTitle">数字能量学与生辰八字八卦综合分析仪</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #a855f7;
+      --primary-hover: #9333ea;
+      --auspicious: #10b981;
+      --ineuspicious: #ef4444;
+      --neutral: #f59e0b;
+      --gold: #fbbf24;
+
+      /* Five Elements Custom Colors */
+      --elem-wood: #22c55e;   /* 木 - Green */
+      --elem-fire: #ef4444;   /* 火 - Red */
+      --elem-earth: #78350f;  /* 土 - Chocolate Brown */
+      --elem-metal: #eab308;  /* 金 - Yellow */
+      --elem-water: #3b82f6;  /* 水 - Blue */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 950px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: -12px;
+    }
+
+    .lang-select-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .lang-select-wrapper label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    select.lang-select {
+      background: #0f172a;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 4px 8px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: #c084fc;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .form-group input, .form-group select {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .dob-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dob-group select.calendar-type {
+      width: 125px;
+      flex-shrink: 0;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    input[type="text"]#numInput {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: #0f172a;
+      color: #fff;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      outline: none;
+    }
+
+    input[type="text"]#numInput:focus {
+      border-color: var(--primary);
+    }
+
+    button.btn-submit {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button.btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .result-section {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .score-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .score-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      border: 4px solid var(--primary);
+    }
+
+    .score-details h2 {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .score-details p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .score-note {
+      margin-top: 8px;
+      padding: 6px 9px;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 6px;
+      background: rgba(168, 85, 247, 0.05);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+
+    .score-note #scoreNoteTitle {
+      color: #c084fc;
+      font-weight: 600;
+      font-size: 0.72rem;
+      margin-bottom: 2px;
+    }
+
+    .score-note p {
+      margin: 0;
+    }
+
+    .polarity-card {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      line-height: 1.6;
+      font-size: 0.86rem;
+    }
+    .polarity-plus { color: var(--auspicious); font-weight: 700; }
+    .polarity-minus { color: var(--ineuspicious); font-weight: 700; }
+    .polarity-detail {
+      margin: 10px 0;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.75);
+      line-height: 1.6;
+      font-size: 0.86rem;
+    }
+    .polarity-detail strong { color: var(--gold); }
+    .polarity-example {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--primary);
+      background: rgba(168, 85, 247, 0.08);
+      border-radius: 6px;
+    }
+    .polarity-chain {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px dashed rgba(168, 85, 247, 0.45);
+      border-radius: 7px;
+      background: rgba(168, 85, 247, 0.05);
+      line-height: 1.7;
+    }
+    .polarity-chain-label {
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .badge-gold { background: rgba(251, 191, 36, 0.2); color: var(--gold); border: 1px solid var(--gold); }
+    .badge-score { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7; font-weight: bold; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    details.card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    details.card summary {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #c084fc;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    details.card summary::-webkit-details-marker { display: none; }
+
+    details.card summary::after {
+      content: "▼";
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    details.card[open] summary::after { transform: rotate(180deg); }
+
+    .bazi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .bazi-box {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .bazi-box .label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+    .bazi-box .stem { font-size: 1.2rem; font-weight: bold; color: #ffffff; }
+    .bazi-box .branch { font-size: 1.2rem; font-weight: bold; color: #ffffff; }
+    .bazi-box .elem { font-size: 0.75rem; margin-top: 4px; color: var(--text-muted); }
+
+    .wuxing-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .wuxing-item {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      padding: 8px 4px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .wuxing-wood  { border-color: rgba(34, 197, 94, 0.5);  background: rgba(34, 197, 94, 0.08);  color: var(--elem-wood);  }
+    .wuxing-fire  { border-color: rgba(239, 68, 68, 0.5);   background: rgba(239, 68, 68, 0.08);   color: var(--elem-fire);  }
+    .wuxing-earth { border-color: rgba(120, 53, 15, 0.8);  background: rgba(120, 53, 15, 0.25);  color: #fcd34d;          }
+    .wuxing-metal { border-color: rgba(234, 179, 8, 0.8);  background: rgba(234, 179, 8, 0.15);  color: var(--elem-metal); }
+    .wuxing-water { border-color: rgba(59, 130, 246, 0.5);  background: rgba(59, 130, 246, 0.08);  color: var(--elem-water); }
+
+    .pair-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pair-card {
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pair-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .pair-header .num { font-weight: bold; font-size: 1.1rem; }
+    .pair-header .desc { font-size: 0.85rem; font-weight: 600; }
+
+    .pair-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .pair-details div {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pair-details span.label {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .reason-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reason-list li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .reason-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .pro-list li::before { color: var(--auspicious); }
+    .con-list li::before { color: var(--ineuspicious); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th { color: var(--text-muted); font-weight: 500; }
+
+    .recom-content {
+      margin-top: 16px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .elem-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .elem-card {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .elem-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .elem-card p {
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .elem-card strong {
+      color: var(--text-main);
+    }
+
+    .luck-pillars-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .luck-row {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .luck-row:hover {
+      border-color: var(--primary);
+    }
+
+    .luck-row-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+      padding-bottom: 8px;
+    }
+
+    .luck-row-age {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--gold);
+    }
+
+    .luck-row-pillar {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .luck-row-elem {
+      font-size: 0.85rem;
+      color: #c084fc;
+    }
+
+    .luck-row-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="top-bar">
+    <div class="lang-select-wrapper">
+      <label for="langSelect" id="lblLang">语言 / Language:</label>
+      <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+        <option value="zh-CN" selected>简体中文</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+
+  <header>
+    <h1 id="appTitle">数字能量学与生辰八字八卦综合分析仪</h1>
+    <p id="appSub">基于《易经》后天八卦、九宫命卦、八字五行与数字能量学研判</p>
+  </header>
+
+  <!-- Search Card as Expandable Details -->
+  <details class="card" open>
+    <summary id="summarySearchTitle">⚙️ 参数配置与号码输入</summary>
+    <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 16px;">
+      <div class="form-grid">
+        <!-- Name -->
+        <div class="form-group">
+          <label for="userName" id="lblUserName">姓名 (选填)</label>
+          <input type="text" id="userName" placeholder="例如：张三">
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+          <label for="userGender" id="lblUserGender">性别 (计算命卦用)</label>
+          <select id="userGender" onchange="triggerAutoAnalyze()">
+            <option value="unset" selected id="optGenderDefault">-- 请选择性别 --</option>
+            <option value="male" id="optMale">男</option>
+            <option value="female" id="optFemale">女</option>
+          </select>
+        </div>
+
+        <!-- Career Option -->
+        <div class="form-group">
+          <label for="userCareer" id="lblUserCareer">职业方向 (选填 - 精准匹配)</label>
+          <select id="userCareer" onchange="triggerAutoAnalyze()">
+            <option value="" id="optCareerDefault">-- 请选择职业类别 --</option>
+            <option value="executive" id="optCareerExec">企业高管 / 领导管理</option>
+            <option value="sales" id="optCareerSales">市场销售 / 商务拓展</option>
+            <option value="business" id="optCareerBiz">创业者 / 企业老板</option>
+            <option value="finance" id="optCareerFin">金融投资 / 财税理财</option>
+            <option value="tech" id="optCareerTech">技术研发 / IT工程师</option>
+            <option value="creative" id="optCareerMedia">自媒体 / 艺术创意</option>
+            <option value="student" id="optCareerEdu">学生 / 学术科研</option>
+          </select>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group">
+          <label for="userDob" id="lblUserDob">出生日期与历法 (必填以开启八字)</label>
+          <div class="dob-group">
+            <select id="calendarType" class="calendar-type" onchange="triggerAutoAnalyze()">
+              <option value="solar" id="optSolar">阳历 (公历)</option>
+              <option value="lunar" id="optLunar">农历</option>
+            </select>
+            <input type="date" id="userDob" value="" style="flex:1;" onchange="triggerAutoAnalyze()">
+          </div>
+        </div>
+
+        <!-- Birth Hour -->
+        <div class="form-group">
+          <label for="userHour" id="lblUserHour">出生时辰 (选填 - 补充时柱)</label>
+          <select id="userHour" onchange="triggerAutoAnalyze()">
+            <option value="-1" id="optHourUnknown">未知 / 不指定</option>
+            <option value="0" id="optHourZi">子时 (23:00 - 00:59)</option>
+            <option value="2" id="optHourChou">丑时 (01:00 - 02:59)</option>
+            <option value="4" id="optHourYin">寅时 (03:00 - 04:59)</option>
+            <option value="6" id="optHourMao">卯时 (05:00 - 06:59)</option>
+            <option value="8" id="optHourChen">辰时 (07:00 - 08:59)</option>
+            <option value="10" id="optHourSi">巳时 (09:00 - 10:59)</option>
+            <option value="12" id="optHourWu">午时 (11:00 - 12:59)</option>
+            <option value="14" id="optHourWei">未时 (13:00 - 14:59)</option>
+            <option value="16" id="optHourShen">申时 (15:00 - 16:59)</option>
+            <option value="18" id="optHourYou">酉时 (17:00 - 18:59)</option>
+            <option value="20" id="optHourXu">戌时 (19:00 - 20:59)</option>
+            <option value="22" id="optHourHai">亥时 (21:00 - 22:59)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Required Number Input -->
+      <div class="form-group" style="margin-top: 4px;">
+        <label for="numInput" id="lblNumInput">手机号码 / 数字组合 (必填 * )</label>
+        <div class="input-group">
+          <input type="text" id="numInput" placeholder="请输入手机号码或数字组合（按 Enter 键搜索）" value="">
+          <button class="btn-submit" onclick="analyzeNumber(true)" id="btnAnalyze">深度联合研判</button>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <div class="result-section" id="resultSection" style="display:none; flex-direction: column; gap: 24px;">
+    
+    <!-- Overall Score -->
+    <details class="card" open>
+      <summary id="titleOverallScore">综合能量与后天匹配评分</summary>
+      <div style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div class="score-left">
+          <div class="score-circle" id="scoreCircle">0</div>
+          <div class="score-details">
+            <p id="scoreSummary">正在计算八字与数字能量算法...</p>
+            <div class="score-note">
+              <div id="scoreNoteTitle">📌 评分说明</div>
+              <p id="scoreNoteText">总分仅作为快速参考；下方各项拆解、磁场链条、极性调控与后天加减分依据，才是针对不同使用场景进行判断时更准确的依据。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Pairs Breakdown -->
+    <details class="card" open>
+      <summary id="titlePairsBreakdown">磁场链条组合拆解</summary>
+      <div style="margin-top: 16px;">
+        <div class="pair-list" id="pairList"></div>
+      </div>
+    </details>
+
+    <!-- Pros & Cons -->
+    <div class="grid-2">
+      <details class="card" open>
+        <summary style="color: var(--auspicious);" id="titlePros">磁场优势</summary>
+        <div style="margin-top: 16px;">
+          <ul class="reason-list pro-list" id="proList"></ul>
+        </div>
+      </details>
+      <details class="card" open>
+        <summary style="color: var(--ineuspicious);" id="titleCons">磁场风险与短板</summary>
+        <div style="margin-top: 16px;">
+          <ul class="reason-list con-list" id="conList"></ul>
+        </div>
+      </details>
+    </div>
+
+    <!-- Evaluation Logic -->
+    <div class="grid-2">
+      <details class="card" open>
+        <summary id="titleEvalLogic">评分逻辑与后天加减分依据</summary>
+        <div style="margin-top: 16px;">
+          <ul class="reason-list" id="reasonList"></ul>
+        </div>
+      </details>
+
+      <details class="card" open>
+        <summary id="titleRuleChecks">凶星制化与先天五行后天补救</summary>
+        <div style="margin-top: 16px;" id="ruleCheckList"></div>
+      </details>
+    </div>
+
+    <!-- Recommendation Option for changing numbers -->
+    <details class="card" id="recomDetails" open>
+      <summary id="summaryRecom">💡 基于八字喜用神与命卦的改号选号定制建议</summary>
+      <div class="recom-content" id="recomContent"></div>
+    </details>
+
+    <!-- Dimensions Section with Scores -->
+    <details class="card" open>
+      <summary id="titleDimensions">八字与数字能量多维度联动影响剖析</summary>
+      <div style="margin-top: 16px;">
+        <table>
+          <thead>
+            <tr>
+              <th id="thDimension" style="width: 25%;">维度</th>
+              <th id="thScore" style="width: 15%;">匹配得分</th>
+              <th id="thAnalysis" style="width: 60%;">先天命格与后天磁场演化趋势</th>
+            </tr>
+          </thead>
+          <tbody id="dimensionTable"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- FIVE ELEMENTS BENEFIT & REMEDY GUIDE -->
+    <details class="card" open>
+      <summary id="titleElemGuide">五行增益与后天补救指南</summary>
+      <div class="elem-guide-grid" id="elemGuideGrid" style="margin-top: 16px;"></div>
+    </details>
+
+    <!-- DOB BAZI & MING GUA BLUEPRINT -->
+    <details class="card" id="baziBlueprintCard" open>
+      <summary id="titleBaziBlueprint">生辰八字与后天命卦先天蓝图</summary>
+      <div style="margin-top: 16px;">
+        <div class="bazi-grid" id="baziGrid"></div>
+        <div class="wuxing-bar" id="wuxingBar"></div>
+        <div id="baziSummaryText" style="margin-top: 14px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);"></div>
+      </div>
+    </details>
+
+    <!-- 10-YEAR LUCK CYCLES WITH DETAILED EXPLANATIONS -->
+    <details class="card" id="tenYearLuckCard" open>
+      <summary id="titleTenYearLuck">大运流年与十年运势演变</summary>
+      <div style="margin-top: 16px;">
+        <div class="luck-pillars-stack" id="luckPillarsStack"></div>
+        <div id="luckSummaryText" style="margin-top: 14px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;"></div>
+      </div>
+    </details>
+
+  </div>
+</div>
+
+<script>
+function formatDateDDmmYYYY(dateObj) {
+  if (!dateObj || isNaN(dateObj.getTime())) return '';
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+const I18N = {
+  "zh-CN": {
+    docTitle: "数字能量学与生辰八字八卦综合分析仪",
+    appTitle: "数字能量学与生辰八字八卦综合分析仪",
+    appSub: "基于《易经》后天八卦、九宫命卦、八字五行与数字能量学研判",
+    lblLang: "语言 / Language:",
+    lblUserName: "姓名 (选填)",
+    userNamePlaceholder: "例如：张三",
+    lblUserGender: "性别 (计算命卦用)",
+    optGenderDefault: "-- 请选择性别 --",
+    optMale: "男",
+    optFemale: "女",
+    lblUserCareer: "职业方向 (选填 - 精准匹配)",
+    optCareerDefault: "-- 请选择职业类别 --",
+    optCareerExec: "企业高管 / 领导管理",
+    optCareerSales: "市场销售 / 商务拓展",
+    optCareerBiz: "创业者 / 企业老板",
+    optCareerFin: "金融投资 / 财税理财",
+    optCareerTech: "技术研发 / IT工程师",
+    optCareerMedia: "自媒体 / 艺术创意",
+    optCareerEdu: "学生 / 学术科研",
+    lblUserDob: "出生日期与历法 (必填以开启八字)",
+    optSolar: "阳历 (公历)",
+    optLunar: "农历",
+    lblUserHour: "出生时辰 (选填 - 补充时柱)",
+    optHourUnknown: "未知 / 不指定",
+    optHourZi: "子时 (23:00 - 00:59)",
+    optHourChou: "丑时 (01:00 - 02:59)",
+    optHourYin: "寅时 (03:00 - 04:59)",
+    optHourMao: "卯时 (05:00 - 06:59)",
+    optHourChen: "辰时 (07:00 - 08:59)",
+    optHourSi: "巳时 (09:00 - 10:59)",
+    optHourWu: "午时 (11:00 - 12:59)",
+    optHourWei: "未时 (13:00 - 14:59)",
+    optHourShen: "申时 (15:00 - 16:59)",
+    optHourYou: "酉时 (17:00 - 18:59)",
+    optHourXu: "戌时 (19:00 - 20:59)",
+    optHourHai: "亥时 (21:00 - 22:59)",
+    lblNumInput: "手机号码 / 数字组合 (必填 * )",
+    numPlaceholder: "请输入手机号码或数字组合（按 Enter 键搜索）",
+    btnAnalyze: "深度联合研判",
+    summarySearchTitle: "⚙️ 参数配置与号码输入",
+    titleOverallScore: "综合能量与后天匹配评分",
+    titleBaziBlueprint: "生辰八字与后天命卦先天蓝图",
+    titleTenYearLuck: "大运流年与十年运势演变",
+    titlePairsBreakdown: "磁场链条组合拆解",
+    titlePros: "磁场优势",
+    titleCons: "磁场风险与短板",
+    titleEvalLogic: "评分逻辑与后天加减分依据",
+    titleRuleChecks: "凶星制化与先天五行后天补救",
+    summaryRecom: "💡 基于八字喜用神与命卦的改号选号定制建议",
+    titleDimensions: "八字与数字能量多维度联动影响剖析",
+    titleElemGuide: "五行增益与后天补救指南",
+    thDimension: "维度",
+    thScore: "匹配得分",
+    thAnalysis: "先天命格与后天磁场演化趋势",
+    alertInput: "请输入至少包含两位有效数字的文本/号码！",
+    levelUnit: "级能量",
+    userDefault: "用户",
+    mingGuaLabel: "命卦",
+    matchDegree: "综合能量匹配度",
+    scoreNoteTitle: "📌 评分说明",
+    scoreNoteText: "总分仅作为快速参考；下方各项拆解、磁场链条与后天加减分依据可用于辅助判断。0／5极性调控仅提供解释，不计入综合评分，实际影响由使用者自行判断。",
+    evalExcellent: "极佳",
+    evalBalanced: "平衡",
+    evalAdjust: "需调控化解",
+    pillarYear: "年柱",
+    pillarMonth: "月柱",
+    pillarDay: "日柱",
+    pillarHour: "时柱",
+    dayMasterCore: "日主核心",
+    yuanShen: "元神",
+    missingWeak: "五行缺失/较弱",
+    allBalanced: "五行齐全",
+    usefulElem: "推荐喜用神数理",
+    afterGua: "后天命卦",
+    auspiciousDir: "吉方",
+    remedyTrigger: "触发【后天五行数字补救】：手机号成功补充生辰八字缺失之五行磁场",
+    remedyRule: "五行匹配：号码成功融合补救五行数字，平衡先天局势。",
+    guaResonance: "触发【九宫命卦共振】：号码包含命卦相合数理",
+    tianYiJueMing: "⚡ 触发制化【天医欺绝命】：天医财运对冲绝命冲动破财 (+10分)",
+    yanNianLiuSha: "⚡ 触发制化【延年压六煞】：延年责任感压制六煞情绪化 (+10分)",
+    zeroTail: "🚨 触发【尾号坍缩黑洞 (尾数0)】：终局归零，扣分 (-30分)",
+    zeroTailRisk: "🚨 尾数逢0黑洞：无论前期如何努力，最终易面临财富或事业归零结局。",
+    polarityFive: "【数字5极性说明】本项仅用于解释数字5对相关磁场的显性化、放大与连接作用，不计入综合评分。",
+    polarityFiveNeutral: "【数字5极性说明】当前位置未形成可归因于“5”的有效磁场关系；本层仅作说明，不调整综合评分。",
+    polarityZero: "【数字0极性说明】本项仅用于解释内部0对相关磁场的隐性化、减弱或延后显现作用，不计入综合评分；尾号0仍按独立坍缩规则说明。",
+    polarityMechanismTitle: "【0／5极性调控与场顺序链条】",
+    polarityFiveExplain: "当“5”位于有效磁场之间时，先确定其左侧场、跨位场与右侧场，再按号码实际出现顺序排列。5不新增八星，而负责把前后磁场显性化、放大，并强化它们之间的连接关系。",
+    polarityZeroExplain: "当“0”位于有效磁场之间时，先确定其左侧场、跨位场与右侧场，再按号码实际出现顺序排列。0不新增八星，而使相关磁场趋于隐性、减弱或延后显现。",
+    polarityTailZeroExplain: "尾号“0”直接作用于终局，属于独立的坍缩规则，不与内部0的隐性化扣分重复计算。",
+    polarityTriggerLabel: "触发位置",
+    polarityAffectedLabel: "受调控磁场",
+    polarityChainLabel: "场顺序链条",
+    polaritySequenceIntro: "将当前号码拆分为连续的两位数组合，并保留0／5所在的三位核心结构：",
+    polarityCoreFieldLabel: "核心磁场",
+    polarityInterpretLabel: "当前号码解释",
+    polarityNoteLabel: "判定原则",
+    polarityFiveInterpret: "“5”使链条中的相关磁场更容易显性呈现，并强化前后能量的连接。场顺序链条以号码实际顺序表达；夹在“5”两侧的三位结构标为核心，再结合前后磁场落点解释。",
+    polarityZeroInterpret: "“0”使链条中的相关磁场趋于隐藏、减弱或延后显现。场顺序链条以号码实际顺序表达；夹在“0”两侧的三位结构标为核心，再结合前后磁场落点解释。",
+    polarityFiveNote: "5是中宫调控介质，不单独作为八星计数；本项仅提供象意解释，不参与综合评分，由使用者自行判断实际影响。",
+    polarityZeroNote: "内部0仅按隐性化规则进行解释；若同时位于尾号，则尾号坍缩规则独立说明。本项不参与综合评分，由使用者自行判断实际影响。",
+    polarityNoTrigger: "当前位置未形成可识别的0／5极性调控关系；本层仅作说明，不调整综合评分。",
+    starAusp: "包含吉星",
+    starInausp: "包含凶星",
+    lblCareerAspect: "事业象意",
+    lblLoveAspect: "感情象意",
+    lblStudyAspect: "学业象意",
+    lblStrategyAspect: "互动模式与沟通策略",
+    recomHeader: "基于八字的数字选择建议：",
+    yourDayMasterIs: "你的日主为",
+    lacksElem: "先天缺乏五行",
+    fiveElemBalanced: "五行相对平衡。",
+    recomDigits: "建议新手机号尾数或组合优先包含数字",
+    recomCombo: "同时搭配 13/31 (天医) 或 19/91 (延年) 以达成后天天人合一补救效应。",
+    luckGuideHint: "💡 <b>大运解读提示：</b>十年一运，大运干支结合手机号码后天五行磁场，可补充各阶段大运的能量偏颇。每个十年大运标志着人生不同阶段的重心转换、资源聚散及五行流转。",
+    noDobRecom: "<p>请在上方填入出生日期以开启针对喜用神的改号建议。</p>",
+    ageUnit: "岁",
+    dimWealth: "财运与资产积累",
+    dimWealthDescPos: "天医财星显化，且得后天磁场生助，财源稳定。",
+    dimWealthDescNeg: "缺天医正财，建议配置含数字 13/31 组合补强。",
+    dimCareer: "事业与领导力",
+    dimCareerDescPos: "延年磁场加持，掌控力与专业能力极强。",
+    dimCareerDescNeg: "建议在号码中增加 19/91 延年数字以提升决策权。",
+    dimHealth: "五行与健康调和",
+    dimHealthDescPos: "五行运转顺畅，健康磁场平稳。",
+    dimHealthDescNeg: "需注意缺失五行所对应脏腑健康的后天保养。",
+    dimOccupation: "职业磁场契合度",
+    luckPillarSuffix: "运",
+    starNames: {
+      "天医": "天医",
+      "延年": "延年",
+      "生气": "生气",
+      "伏位": "伏位",
+      "绝命": "绝命",
+      "五鬼": "五鬼",
+      "六煞": "六煞",
+      "祸害": "祸害"
+    },
+    stems: { "甲": "甲", "乙": "乙", "丙": "丙", "丁": "丁", "戊": "戊", "己": "己", "庚": "庚", "辛": "辛", "壬": "壬", "癸": "癸" },
+    branches: { "子": "子", "丑": "丑", "寅": "寅", "卯": "卯", "辰": "辰", "巳": "巳", "午": "午", "未": "未", "申": "申", "酉": "酉", "戌": "戌", "亥": "亥" },
+    elements: { "木": "木", "火": "火", "土": "土", "金": "金", "水": "水" }
+  },
+  "en": {
+    docTitle: "Digital Numerology & BaZi Bagua Integrated Analyzer",
+    appTitle: "Digital Numerology & BaZi Bagua Integrated Analyzer",
+    appSub: "Based on I Ching Post-Heaven Bagua, Nine Halls Ming Gua & BaZi Five Elements",
+    lblLang: "Language / 语言:",
+    lblUserName: "Full Name (Optional)",
+    userNamePlaceholder: "e.g. John Doe",
+    lblUserGender: "Gender (For Ming Gua)",
+    optGenderDefault: "-- Select Gender --",
+    optMale: "Male",
+    optFemale: "Female",
+    lblUserCareer: "Career Path (Optional)",
+    optCareerDefault: "-- Select Career Category --",
+    optCareerExec: "Executive / Senior Management",
+    optCareerSales: "Sales / Business Development",
+    optCareerBiz: "Entrepreneur / Business Owner",
+    optCareerFin: "Finance / Investment / Accounting",
+    optCareerTech: "Tech R&D / IT Engineer",
+    optCareerMedia: "Media Content / Creative Arts",
+    optCareerEdu: "Student / Academic Researcher",
+    lblUserDob: "Date of Birth & Calendar Type",
+    optSolar: "Solar Calendar",
+    optLunar: "Lunar Calendar",
+    lblUserHour: "Birth Hour (Optional)",
+    optHourUnknown: "Unknown / Unspecified",
+    optHourZi: "Zi Hour (23:00 - 00:59)",
+    optHourChou: "Chou Hour (01:00 - 02:59)",
+    optHourYin: "Yin Hour (03:00 - 04:59)",
+    optHourMao: "Mao Hour (05:00 - 06:59)",
+    optHourChen: "Chen Hour (07:00 - 08:59)",
+    optHourSi: "Si Hour (09:00 - 10:59)",
+    optHourWu: "Wu Hour (11:00 - 12:59)",
+    optHourWei: "Wei Hour (13:00 - 14:59)",
+    optHourShen: "Shen Hour (15:00 - 16:59)",
+    optHourYou: "You Hour (17:00 - 18:59)",
+    optHourXu: "Xu Hour (19:00 - 20:59)",
+    optHourHai: "Hai Hour (21:00 - 22:59)",
+    lblNumInput: "Phone Number / Digit Combination (Required * )",
+    numPlaceholder: "Enter phone number or digits (Press Enter)",
+    btnAnalyze: "Analyze Integrated Profile",
+    summarySearchTitle: "⚙️ Configuration & Number Input",
+    titleOverallScore: "Overall Energy & Compatibility Score",
+    titleBaziBlueprint: "BaZi Four Pillars & Ming Gua Blueprint",
+    titleTenYearLuck: "10-Year Luck Cycles",
+    titlePairsBreakdown: "Magnetic Combination Chain",
+    titlePros: "Energy Strengths",
+    titleCons: "Energy Risks & Weaknesses",
+    titleEvalLogic: "Scoring Logic & Dynamic Adjustments",
+    titleRuleChecks: "Mitigation & Five Elements Remedies",
+    summaryRecom: "💡 Custom Number Selection & BaZi Remediation Guide",
+    titleDimensions: "Dimensional Impact & BaZi Synergy",
+    titleElemGuide: "Five Elements Benefit & Action Guide",
+    thDimension: "Dimension",
+    thScore: "Score",
+    thAnalysis: "Evolutionary Pattern & Trend",
+    alertInput: "Please enter at least two valid digits!",
+    levelUnit: "Energy Lv",
+    userDefault: "User",
+    mingGuaLabel: "Ming Gua",
+    matchDegree: "Energy Compatibility",
+    scoreNoteTitle: "📌 Score Note",
+    scoreNoteText: "The total score is only a quick-reference index. The detailed breakdown and post-heaven adjustments provide additional context. 0/5 polarity regulation is explanatory only, does not affect the overall score, and is left for the user to judge.",
+    evalExcellent: "Excellent",
+    evalBalanced: "Balanced",
+    evalAdjust: "Adjustment Needed",
+    pillarYear: "Year Pillar",
+    pillarMonth: "Month Pillar",
+    pillarDay: "Day Pillar (Master)",
+    pillarHour: "Hour Pillar",
+    dayMasterCore: "Day Master Core",
+    yuanShen: "Element",
+    missingWeak: "Missing/Weak Elements",
+    allBalanced: "All Elements Present",
+    usefulElem: "Recommended Remedy Element",
+    afterGua: "Life Trigram (Ming Gua)",
+    auspiciousDir: "Best Direction",
+    remedyTrigger: "Triggered [BaZi Digital Remediation]: Digits compensate for missing elements",
+    remedyRule: "Five Elements Harmony: Digits compensate for missing birth elements.",
+    guaResonance: "Triggered [Ming Gua Resonance]: Digits resonate with your Ming Gua",
+    tianYiJueMing: "⚡ Mitigation [Tian Yi tames Jue Ming]: Wealth offsets financial risk (+10 pts)",
+    yanNianLiuSha: "⚡ Mitigation [Yan Nian overrides Liu Sha]: Discipline controls emotional fluctuation (+10 pts)",
+    zeroTail: "🚨 Triggered [Zero-Tail Black Hole]: Energy reset to zero (-30 pts)",
+    zeroTailRisk: "🚨 Zero-Tail Risk: High risk of sudden collapse in wealth or career progress.",
+    polarityFive: "[Digit 5 Explanation] This layer only explains how digit 5 may make related magnetic fields more visible, amplified, and connected; it does not affect the overall score.",
+    polarityFiveNeutral: "[Digit 5 Explanation] No valid magnetic relationship attributable to '5' is formed at this position; this layer is informational only and does not affect the overall score.",
+    polarityZero: "[Digit 0 Explanation] This layer only explains how an internal '0' may hide, weaken, or delay related magnetic fields; it does not affect the overall score. A terminal '0' remains a separate collapse rule.",
+    polarityMechanismTitle: "[0 / 5 Polarity Regulation & Magnetic Sequence]",
+    polarityFiveExplain: "When '5' sits between valid magnetic fields, first identify the field on its left, the field spanning the position, and the field on its right, then order them by their actual position. '5' does not create a new Eight-Star field; it makes the related fields more visible, amplifies them, and strengthens their connection.",
+    polarityZeroExplain: "When '0' sits between valid magnetic fields, first identify the field on its left, the field spanning the position, and the field on its right, then order them by their actual position. '0' does not create a new Eight-Star field; it makes related fields more hidden, weakened, or delayed.",
+    polarityTailZeroExplain: "A terminal '0' acts directly on the end state and follows a separate collapse rule; it is not duplicated with the internal-0 concealment deduction.",
+    polarityTriggerLabel: "Trigger Position",
+    polarityAffectedLabel: "Influenced Fields",
+    polarityChainLabel: "Magnetic Sequence",
+    polaritySequenceIntro: "Split the current number into consecutive two-digit fields while preserving the three-digit core structure around 0/5:",
+    polarityCoreFieldLabel: "Core Field",
+    polarityInterpretLabel: "Current Number Interpretation",
+    polarityNoteLabel: "Decision Principle",
+    polarityFiveInterpret: "When '5' is present, the core three-digit structure is shown in actual number order, and the magnetic field contained in that core is the primary field being amplified. The final meaning depends on the field and its landing position.",
+    polarityZeroInterpret: "When '0' is present, the core three-digit structure is shown in actual number order, and the magnetic field contained in that core is the primary field being concealed or weakened. The final meaning depends on the field and its landing position.",
+    polarityFiveNote: "'5' is a central regulatory medium, not a separate Eight-Star count; this is explanatory only and does not affect the overall score. The user decides its practical significance.",
+    polarityZeroNote: "An internal '0' is explained through the concealment rule; when it is also terminal, the terminal-collapse rule is explained independently. This layer does not affect the overall score.",
+    polarityNoTrigger: "No identifiable 0 / 5 polarity relationship is formed at this position; this layer is informational only and does not affect the overall score.",
+    starAusp: "Auspicious Star",
+    starInausp: "Inauspicious Star",
+    lblCareerAspect: "Career Aspect",
+    lblLoveAspect: "Relationship Aspect",
+    lblStudyAspect: "Academic Aspect",
+    lblStrategyAspect: "Communication Strategy",
+    recomHeader: "Number Selection Recommendation Based on BaZi:",
+    yourDayMasterIs: "Your Day Master is",
+    lacksElem: "lacks element(s):",
+    fiveElemBalanced: "Five Elements are well-balanced.",
+    recomDigits: "Recommended digit(s) in new phone number:",
+    recomCombo: "Combine with 13/31 (Tian Yi) or 19/91 (Yan Nian) for optimum synergy.",
+    luckGuideHint: "💡 <b>Luck Cycle Hint:</b> A 10-year luck pillar combines with your phone digits to balance elemental deficiencies across life stages. Each decade marks a transition in life focus, resource allocation, and elemental flow.",
+    noDobRecom: "<p>Please fill in your Date of Birth above to unlock personalized recommendation.</p>",
+    ageUnit: "yrs",
+    dimWealth: "Wealth & Capital",
+    dimWealthDescPos: "Tian Yi star present and boosted by post-heaven energy. Financial flow is stable.",
+    dimWealthDescNeg: "Lacks Tian Yi wealth star. Suggest adding 13/31 digit combinations.",
+    dimCareer: "Career & Leadership",
+    dimCareerDescPos: "Yan Nian star active. Strong discipline and execution capabilities.",
+    dimCareerDescNeg: "Suggest incorporating 19/91 Yan Nian digits to boost decision-making power.",
+    dimHealth: "Health & Harmony",
+    dimHealthDescPos: "Smooth energy flow, stable health profile.",
+    dimHealthDescNeg: "Pay attention to health aspects tied to missing elements.",
+    dimOccupation: "Career Synergy",
+    luckPillarSuffix: "Luck Pillar",
+    starNames: {
+      "天医": "Tian Yi",
+      "延年": "Yan Nian",
+      "生气": "Sheng Qi",
+      "伏位": "Fu Wei",
+      "绝命": "Jue Ming",
+      "五鬼": "Wu Gui",
+      "六煞": "Liu Sha",
+      "祸害": "Huo Hai"
+    },
+    stems: { "甲": "Jia", "乙": "Yi", "丙": "Bing", "丁": "Ding", "戊": "Wu", "己": "Ji", "庚": "Geng", "辛": "Xin", "壬": "Ren", "癸": "Gui" },
+    branches: { "子": "Zi", "丑": "Chou", "寅": "Yin", "卯": "Mao", "辰": "Chen", "巳": "Si", "午": "Wu", "未": "Wei", "申": "Shen", "酉": "You", "戌": "Xu", "亥": "Hai" },
+    elements: { "木": "Wood", "火": "Fire", "土": "Earth", "金": "Metal", "水": "Water" }
+  }
+};
+
+let currentLang = "zh-CN";
+
+const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+
+const STEM_ELEMENTS = {
+  "甲": "木", "乙": "木", "丙": "火", "丁": "火", "戊": "土",
+  "己": "土", "庚": "金", "辛": "金", "壬": "水", "癸": "水"
+};
+
+const BRANCH_ELEMENTS = {
+  "子": "水", "丑": "土", "寅": "木", "卯": "木", "辰": "土", "巳": "火",
+  "午": "火", "未": "土", "申": "金", "酉": "金", "戌": "土", "亥": "水"
+};
+
+const ELEMENT_NUMBERS = {
+  "木": ["3", "4"],
+  "火": ["9"],
+  "土": ["2", "5", "8"],
+  "金": ["6", "7"],
+  "水": ["1"]
+};
+
+const FIVE_ELEMENTS_GUIDE = {
+  "金": {
+    name: { "zh-CN": "金", "en": "Metal" },
+    colorClass: "wuxing-metal",
+    "zh-CN": {
+      benefit: "主决断力、法则、严谨度与权威。代表肺脏、骨骼与大肠。",
+      whyNeed: "缺金者往往优柔寡断、执行力弱或意志不坚，容易在管理中失权；缺乏理财纪律。",
+      howToGet: "<b>数理增益：</b>手机尾号选用 6, 7。<br><b>日常补救：</b>多穿黄色、金色、白色衣物，佩戴黄金或钛金饰品；西北与正西方位为金位；适合多进行有氧健身与律动。"
+    },
+    en: {
+      benefit: "Governs decisiveness, structure, authority, and discipline. Linked to lungs and bones.",
+      whyNeed: "Lack of Metal causes indecisiveness, weak execution, lack of authority, and poor financial discipline.",
+      howToGet: "<b>Digits:</b> Use numbers 6, 7.<br><b>Actions:</b> Wear white, yellow, or golden tones; wear gold/metal accessories; align facing West or Northwest."
+    }
+  },
+  "木": {
+    name: { "zh-CN": "木", "en": "Wood" },
+    colorClass: "wuxing-wood",
+    "zh-CN": {
+      benefit: "主生发、仁爱、学习力、创新与生长。代表肝胆与筋骨。",
+      whyNeed: "缺木者思维易僵化，缺乏事业扩张动力与贵人运，缺乏向上生长的韧性。",
+      howToGet: "<b>数理增益：</b>手机尾号选用 3, 4。<br><b>日常补救：</b>多接触绿色植物、绿色衣物、木质家具；东方为木位；多晨起公园散步吸纳木气。"
+    },
+    en: {
+      benefit: "Governs growth, benevolence, creativity, and vitality. Linked to liver and tendons.",
+      whyNeed: "Lack of Wood leads to rigid thinking, lack of ambition, and slow career growth.",
+      howToGet: "<b>Digits:</b> Use numbers 3, 4.<br><b>Actions:</b> Surround with real plants, green apparel, wood crafts; align facing East."
+    }
+  },
+  "水": {
+    name: { "zh-CN": "水", "en": "Water" },
+    colorClass: "wuxing-water",
+    "zh-CN": {
+      benefit: "主智慧、灵动、财富流动、沟通与社交能力。代表肾脏、血液与泌尿系统。",
+      whyNeed: "缺水者沟通欠灵活、变通能力弱，财源不畅，容易遇到人际交际瓶颈。",
+      howToGet: "<b>数理增益：</b>手机尾号选用 1。<br><b>日常补救：</b>多穿蓝色、黑色衣物；多喝优质水，多接触水景与海洋；北方为水位。"
+    },
+    en: {
+      benefit: "Governs wisdom, adaptability, cash liquidity, and communication. Linked to kidneys and blood.",
+      whyNeed: "Lack of Water results in poor adaptability, networking issues, and stagnant cash flows.",
+      howToGet: "<b>Digits:</b> Use number 1.<br><b>Actions:</b> Wear blue or black; drink pure water; incorporate water features; align facing North."
+    }
+  },
+  "火": {
+    name: { "zh-CN": "火", "en": "Fire" },
+    colorClass: "wuxing-fire",
+    "zh-CN": {
+      benefit: "主热情、名誉、礼仪、爆发力与影响力。代表心脏、血液与眼睛。",
+      whyNeed: "缺火者缺乏热情活力，事业难以打开名气，在团队中缺乏感染力和领导气场。",
+      howToGet: "<b>数理增益：</b>手机尾号选用 9。<br><b>日常补救：</b>多穿红色、紫色衣物，多晒太阳补充正阳之气；南方为火位；保持积极乐观交流。"
+    },
+    en: {
+      benefit: "Governs passion, reputation, charisma, and expressiveness. Linked to heart and eyes.",
+      whyNeed: "Lack of Fire causes low energy, lack of motivation, and weak personal brand.",
+      howToGet: "<b>Digits:</b> Use number 9.<br><b>Actions:</b> Wear red, purple; embrace sunlight; align facing South."
+    }
+  },
+  "土": {
+    name: { "zh-CN": "土", "en": "Earth" },
+    colorClass: "wuxing-earth",
+    "zh-CN": {
+      benefit: "主诚信、包容、稳重、不动产与积累。代表脾胃与肌肉。",
+      whyNeed: "缺土者情绪易浮躁不安，缺乏根基，难以积聚不动产或长远稳固的资产。",
+      howToGet: "<b>数理增益：</b>手机尾号选用 2, 5, 8。<br><b>日常补救：</b>多穿深褐色、咖啡色、巧克力色衣物；佩戴玉石水晶；多接触大自然泥土与登山。"
+    },
+    en: {
+      benefit: "Governs stability, trust, groundedness, and real estate. Linked to stomach and muscles.",
+      whyNeed: "Lack of Earth leads to anxiety, unstable roots, and difficulty building long-term assets.",
+      howToGet: "<b>Digits:</b> Use numbers 2, 5, 8.<br><b>Actions:</b> Wear earthy brown/chocolate colors; wear jade/crystals; spend time outdoors."
+    }
+  }
+};
+
+const MING_GUA_DATA = {
+  1: { name: { "zh-CN": "坎水", "en": "Kan Water" }, group: { "zh-CN": "东四命", "en": "East Group" }, dir: { "zh-CN": "正北", "en": "North" }, element: "水", numbers: ["1"] },
+  2: { name: { "zh-CN": "坤土", "en": "Kun Earth" }, group: { "zh-CN": "西四命", "en": "West Group" }, dir: { "zh-CN": "西南", "en": "Southwest" }, element: "土", numbers: ["2", "5", "8"] },
+  3: { name: { "zh-CN": "震木", "en": "Zhen Wood" }, group: { "zh-CN": "东四命", "en": "East Group" }, dir: { "zh-CN": "正东", "en": "East" }, element: "木", numbers: ["3"] },
+  4: { name: { "zh-CN": "巽木", "en": "Xun Wood" }, group: { "zh-CN": "东四命", "en": "East Group" }, dir: { "zh-CN": "东南", "en": "Southeast" }, element: "木", numbers: ["4"] },
+  6: { name: { "zh-CN": "乾金", "en": "Qian Metal" }, group: { "zh-CN": "西四命", "en": "West Group" }, dir: { "zh-CN": "西北", "en": "Northwest" }, element: "金", numbers: ["6"] },
+  7: { name: { "zh-CN": "兑金", "en": "Dui Metal" }, group: { "zh-CN": "西四命", "en": "West Group" }, dir: { "zh-CN": "正西", "en": "West" }, element: "金", numbers: ["7"] },
+  8: { name: { "zh-CN": "艮土", "en": "Gen Earth" }, group: { "zh-CN": "西四命", "en": "West Group" }, dir: { "zh-CN": "东北", "en": "Northeast" }, element: "土", numbers: ["8", "2", "5"] },
+  9: { name: { "zh-CN": "离火", "en": "Li Fire" }, group: { "zh-CN": "东四命", "en": "East Group" }, dir: { "zh-CN": "正南", "en": "South" }, element: "火", numbers: ["9"] }
+};
+
+const MAGNETIC_FIELDS = {
+  "13": { 
+    name: "天医", type: "吉", level: 1, 
+    career: { "zh-CN": "正财运极佳，主商业成功与高额回报", "en": "Exceptional direct wealth luck; indicates business success and high returns." },
+    love: { "zh-CN": "正桃花爆发，夫妻恩爱感情甜蜜", "en": "Strong auspicious romance; deep love and sweet marital harmony." },
+    study: { "zh-CN": "聪明过人，文昌显达，考试运极佳", "en": "Exceptional intellect; highly favored for academic achievements and exams." },
+    strategy: { "zh-CN": "宜诚恳交流，利于分享利益与合作共赢", "en": "Engage sincerely; focus on mutual benefits and win-win collaboration." }
+  },
+  "31": { 
+    name: "天医", type: "吉", level: 1, 
+    career: { "zh-CN": "正财运极佳，主商业成功与高额回报", "en": "Exceptional direct wealth luck; indicates business success and high returns." },
+    love: { "zh-CN": "正桃花爆发，夫妻恩爱感情甜蜜", "en": "Strong auspicious romance; deep love and sweet marital harmony." },
+    study: { "zh-CN": "聪明过人，文昌显达，考试运极佳", "en": "Exceptional intellect; highly favored for academic achievements and exams." },
+    strategy: { "zh-CN": "宜诚恳交流，利于分享利益与合作共赢", "en": "Engage sincerely; focus on mutual benefits and win-win collaboration." }
+  },
+  "68": { 
+    name: "天医", type: "吉", level: 2, 
+    career: { "zh-CN": "业绩突出，稳定带来可观利润与财富", "en": "Outstanding performance; reliably generates substantial profits." },
+    love: { "zh-CN": "感情稳定，彼此关怀，适宜谈婚论嫁", "en": "Stable relationship with mutual care; ideal for marriage plans." },
+    study: { "zh-CN": "专注力强，学习效率高，成绩上游", "en": "High focus and learning efficiency; maintains top-tier academic standing." },
+    strategy: { "zh-CN": "宜保持温和态度，多展现关怀与实际支持", "en": "Maintain a warm attitude; show genuine care and practical support." }
+  },
+  "86": { 
+    name: "天医", type: "吉", level: 2, 
+    career: { "zh-CN": "业绩突出，稳定带来可观利润与财富", "en": "Outstanding performance; reliably generates substantial profits." },
+    love: { "zh-CN": "感情稳定，彼此关怀，适宜谈婚论嫁", "en": "Stable relationship with mutual care; ideal for marriage plans." },
+    study: { "zh-CN": "专注力强，学习效率高，成绩上游", "en": "High focus and learning efficiency; maintains top-tier academic standing." },
+    strategy: { "zh-CN": "宜保持温和态度，多展现关怀与实际支持", "en": "Maintain a warm attitude; show genuine care and practical support." }
+  },
+  "94": { 
+    name: "天医", type: "吉", level: 3, 
+    career: { "zh-CN": "小财持续，工作收入稳定有保障", "en": "Steady stream of small gains; guarantees stable work income." },
+    love: { "zh-CN": "平淡温馨，细水长流的相处模式", "en": "Warm, peaceful, and long-lasting relationship dynamic." },
+    study: { "zh-CN": "基础扎实，循序渐进，表现稳健", "en": "Solid fundamentals; steady progress with reliable performance." },
+    strategy: { "zh-CN": "宜多肯定对方付出，营造轻松对话氛围", "en": "Acknowledge contributions; create a relaxed atmosphere for dialogue." }
+  },
+  "49": { 
+    name: "天医", type: "吉", level: 3, 
+    career: { "zh-CN": "小财持续，工作收入稳定有保障", "en": "Steady stream of small gains; guarantees stable work income." },
+    love: { "zh-CN": "平淡温馨，细水长流的相处模式", "en": "Warm, peaceful, and long-lasting relationship dynamic." },
+    study: { "zh-CN": "基础扎实，循序渐进，表现稳健", "en": "Solid fundamentals; steady progress with reliable performance." },
+    strategy: { "zh-CN": "宜多肯定对方付出，营造轻松对话氛围", "en": "Acknowledge contributions; create a relaxed atmosphere for dialogue." }
+  },
+  "72": { 
+    name: "天医", type: "吉", level: 4, 
+    career: { "zh-CN": "微小财气，适合小本经营或副业添补", "en": "Minor wealth energy; suited for small businesses or side hustles." },
+    love: { "zh-CN": "小有波澜但终归平静，感情尚可", "en": "Minor ups and downs settling into peace; decent emotional connection." },
+    study: { "zh-CN": "需多加督促，保持学习热情方能出成绩", "en": "Requires regular motivation and sustained effort to achieve results." },
+    strategy: { "zh-CN": "宜小步慢进，从日常琐事切入建立信任", "en": "Take gradual steps; build trust starting from daily small matters." }
+  },
+  "27": { 
+    name: "天医", type: "吉", level: 4, 
+    career: { "zh-CN": "微小财气，适合小本经营或副业添补", "en": "Minor wealth energy; suited for small businesses or side hustles." },
+    love: { "zh-CN": "小有波澜但终归平静，感情尚可", "en": "Minor ups and downs settling into peace; decent emotional connection." },
+    study: { "zh-CN": "需多加督促，保持学习热情方能出成绩", "en": "Requires regular motivation and sustained effort to achieve results." },
+    strategy: { "zh-CN": "宜小步慢进，从日常琐事切入建立信任", "en": "Take gradual steps; build trust starting from daily small matters." }
+  },
+
+  "19": { 
+    name: "延年", type: "吉", level: 1, 
+    career: { "zh-CN": "领导力爆棚，掌控大局，专业权威极高", "en": "Dominant leadership and command; commands high professional authority." },
+    love: { "zh-CN": "责任感极强，但略显强势，需多沟通", "en": "Strong sense of responsibility, though can be assertive; active communication needed." },
+    study: { "zh-CN": "自主学习能力强，目标明确，成绩拔尖", "en": "Self-driven with clear goals; consistently achieves top academic results." },
+    strategy: { "zh-CN": "宜尊重其专业权威，避免正面硬碰或质疑", "en": "Respect their authority; avoid direct confrontation or questioning." }
+  },
+  "91": { 
+    name: "延年", type: "吉", level: 1, 
+    career: { "zh-CN": "领导力爆棚，掌控大局，专业权威极高", "en": "Dominant leadership and command; commands high professional authority." },
+    love: { "zh-CN": "责任感极强，但略显强势，需多沟通", "en": "Strong sense of responsibility, though can be assertive; active communication needed." },
+    study: { "zh-CN": "自主学习能力强，目标明确，成绩拔尖", "en": "Self-driven with clear goals; consistently achieves top academic results." },
+    strategy: { "zh-CN": "宜尊重其专业权威，避免正面硬碰或质疑", "en": "Respect their authority; avoid direct confrontation or questioning." }
+  },
+  "87": { 
+    name: "延年", type: "吉", level: 2, 
+    career: { "zh-CN": "独当一面，执行力强，深受上司器重", "en": "Capable of independent management; strong execution highly valued by superiors." },
+    love: { "zh-CN": "忠诚专一，懂得担当，感情根基牢固", "en": "Loyal and dependable; forms a solid emotional foundation." },
+    study: { "zh-CN": "严谨认真，逻辑严密，功底深厚", "en": "Rigorously disciplined with tight logic; possesses deep foundational knowledge." },
+    strategy: { "zh-CN": "宜理性客观沟通，多用数据和事实说话", "en": "Communicate objectively and rationally; rely on data and facts." }
+  },
+  "78": { 
+    name: "延年", type: "吉", level: 2, 
+    career: { "zh-CN": "独当一面，执行力强，深受上司器重", "en": "Capable of independent management; strong execution highly valued by superiors." },
+    love: { "zh-CN": "忠诚专一，懂得担当，感情根基牢固", "en": "Loyal and dependable; forms a solid emotional foundation." },
+    study: { "zh-CN": "严谨认真，逻辑严密，功底深厚", "en": "Rigorously disciplined with tight logic; possesses deep foundational knowledge." },
+    strategy: { "zh-CN": "宜理性客观沟通，多用数据和事实说话", "en": "Communicate objectively and rationally; rely on data and facts." }
+  },
+  "43": { 
+    name: "延年", type: "吉", level: 3, 
+    career: { "zh-CN": "踏实肯干，默默奉献，工作任劳任怨", "en": "Grounded and hardworking; dedicated without complaint." },
+    love: { "zh-CN": "务实过日子，缺乏浪漫与仪式感", "en": "Pragmatic in life; may lack romantic flare or grand gestures." },
+    study: { "zh-CN": "踏实努力，靠勤奋弥补不足", "en": "Steady worker; overcomes gaps through persistence and diligence." },
+    strategy: { "zh-CN": "宜给予具体任务，少谈虚无缥缈的宏图", "en": "Provide actionable tasks; focus on practical goals over vague concepts." }
+  },
+  "34": { 
+    name: "延年", type: "吉", level: 3, 
+    career: { "zh-CN": "踏实肯干，默默奉献，工作任劳任怨", "en": "Grounded and hardworking; dedicated without complaint." },
+    love: { "zh-CN": "务实过日子，缺乏浪漫与仪式感", "en": "Pragmatic in life; may lack romantic flare or grand gestures." },
+    study: { "zh-CN": "踏实努力，靠勤奋弥补不足", "en": "Steady worker; overcomes gaps through persistence and diligence." },
+    strategy: { "zh-CN": "宜给予具体任务，少谈虚无缥缈的宏图", "en": "Provide actionable tasks; focus on practical goals over vague concepts." }
+  },
+  "26": { 
+    name: "延年", type: "吉", level: 4, 
+    career: { "zh-CN": "压抑较多，能力有限但仍力求自律", "en": "Carries high pressure; struggles with capacity but remains disciplined." },
+    love: { "zh-CN": "感情被动，不擅表达内心真实想法", "en": "Passive in romance; hesitant to articulate true feelings." },
+    study: { "zh-CN": "学习较为吃力，需要给予信心指导", "en": "Finds academics challenging; requires supportive guidance." },
+    strategy: { "zh-CN": "宜多鼓励倾听，减轻其心理负担与压力", "en": "Encourage and listen actively; help lighten mental stress." }
+  },
+  "62": { 
+    name: "延年", type: "吉", level: 4, 
+    career: { "zh-CN": "压抑较多，能力有限但仍力求自律", "en": "Carries high pressure; struggles with capacity but remains disciplined." },
+    love: { "zh-CN": "感情被动，不擅表达内心真实想法", "en": "Passive in romance; hesitant to articulate true feelings." },
+    study: { "zh-CN": "学习较为吃力，需要给予信心指导", "en": "Finds academics challenging; requires supportive guidance." },
+    strategy: { "zh-CN": "宜多鼓励倾听，减轻其心理负担与压力", "en": "Encourage and listen actively; help lighten mental stress." }
+  },
+
+  "14": { 
+    name: "生气", type: "吉", level: 1, 
+    career: { "zh-CN": "贵人运爆发，逢凶化吉，事业常得提携", "en": "Surge in benefactor luck; turns crises into opportunities with strong mentorship." },
+    love: { "zh-CN": "人缘极佳，异性缘爆棚，感情随缘快乐", "en": "Extremely popular; enjoys joyful, natural romantic connections." },
+    study: { "zh-CN": "思维敏捷，兴趣广泛，轻松取得好成绩", "en": "Agile mind with broad interests; achieves excellent results effortlessly." },
+    strategy: { "zh-CN": "宜保持幽默愉快，多聊共同兴趣与正面话题", "en": "Maintain a positive and humorous vibe; discuss shared interests." }
+  },
+  "41": { 
+    name: "生气", type: "吉", level: 1, 
+    career: { "zh-CN": "贵人运爆发，逢凶化吉，事业常得提携", "en": "Surge in benefactor luck; turns crises into opportunities with strong mentorship." },
+    love: { "zh-CN": "人缘极佳，异性缘爆棚，感情随缘快乐", "en": "Extremely popular; enjoys joyful, natural romantic connections." },
+    study: { "zh-CN": "思维敏捷，兴趣广泛，轻松取得好成绩", "en": "Agile mind with broad interests; achieves excellent results effortlessly." },
+    strategy: { "zh-CN": "宜保持幽默愉快，多聊共同兴趣与正面话题", "en": "Maintain a positive and humorous vibe; discuss shared interests." }
+  },
+  "67": { 
+    name: "生气", type: "吉", level: 2, 
+    career: { "zh-CN": "朋友多路子广，适合团队合作与商务社交", "en": "Expansive social network; excels in teamwork and business networking." },
+    love: { "zh-CN": "相处融洽愉快，感情氛围轻松自然", "en": "Harmonious interaction; fosters an easygoing, pleasant bond." },
+    study: { "zh-CN": "乐于交流讨论，在互动中吸收知识", "en": "Enjoys discussions; absorbs knowledge effectively through interaction." },
+    strategy: { "zh-CN": "宜多邀请参加社交活动，拉近彼此心理距离", "en": "Invite to social gatherings to build rapport and closeness." }
+  },
+  "76": { 
+    name: "生气", type: "吉", level: 2, 
+    career: { "zh-CN": "朋友多路子广，适合团队合作与商务社交", "en": "Expansive social network; excels in teamwork and business networking." },
+    love: { "zh-CN": "相处融洽愉快，感情氛围轻松自然", "en": "Harmonious interaction; fosters an easygoing, pleasant bond." },
+    study: { "zh-CN": "乐于交流讨论，在互动中吸收知识", "en": "Enjoys discussions; absorbs knowledge effectively through interaction." },
+    strategy: { "zh-CN": "宜多邀请参加社交活动，拉近彼此心理距离", "en": "Invite to social gatherings to build rapport and closeness." }
+  },
+  "93": { 
+    name: "生气", type: "吉", level: 3, 
+    career: { "zh-CN": "知足常乐，工作心态平和，小贵人相助", "en": "Contented mindset; peaceful attitude supported by helpful allies." },
+    love: { "zh-CN": "要求不高，随遇而安的感情态度", "en": "Easygoing expectations; takes romance as it comes." },
+    study: { "zh-CN": "心态平稳，不易焦虑，发挥相对稳定", "en": "Stable temperament; rarely anxious, maintaining steady performance." },
+    strategy: { "zh-CN": "宜顺应其节奏，切忌过度施压或逼迫", "en": "Adapt to their pace; avoid imposing unnecessary pressure." }
+  },
+  "39": { 
+    name: "生气", type: "吉", level: 3, 
+    career: { "zh-CN": "知足常乐，工作心态平和，小贵人相助", "en": "Contented mindset; peaceful attitude supported by helpful allies." },
+    love: { "zh-CN": "要求不高，随遇而安的感情态度", "en": "Easygoing expectations; takes romance as it comes." },
+    study: { "zh-CN": "心态平稳，不易焦虑，发挥相对稳定", "en": "Stable temperament; rarely anxious, maintaining steady performance." },
+    strategy: { "zh-CN": "宜顺应其节奏，切忌过度施压或逼迫", "en": "Adapt to their pace; avoid imposing unnecessary pressure." }
+  },
+  "28": { 
+    name: "生气", type: "吉", level: 4, 
+    career: { "zh-CN": "企图心稍弱，依赖他人，缺乏自主突破", "en": "Low ambition; tends to rely on others rather than self-driven breakthroughs." },
+    love: { "zh-CN": "随缘交往，容易受到外界意见影响", "en": "Easily influenced by external opinions in relationships." },
+    study: { "zh-CN": "易受玩乐吸引，需要外界适当提醒", "en": "Prone to distractions; benefits from gentle reminders." },
+    strategy: { "zh-CN": "宜适度引导提醒，帮助其建立清晰目标", "en": "Offer constructive guidance to assist in defining clear goals." }
+  },
+  "82": { 
+    name: "生气", type: "吉", level: 4, 
+    career: { "zh-CN": "企图心稍弱，依赖他人，缺乏自主突破", "en": "Low ambition; tends to rely on others rather than self-driven breakthroughs." },
+    love: { "zh-CN": "随缘交往，容易受到外界意见影响", "en": "Easily influenced by external opinions in relationships." },
+    study: { "zh-CN": "易受玩乐吸引，需要外界适当提醒", "en": "Prone to distractions; benefits from gentle reminders." },
+    strategy: { "zh-CN": "宜适度引导提醒，帮助其建立清晰目标", "en": "Offer constructive guidance to assist in defining clear goals." }
+  },
+
+  "11": { 
+    name: "伏位", type: "吉", level: 1, 
+    career: { "zh-CN": "蓄势待发，专注耐力极强，适合长期深耕", "en": "Biding power; high endurance suited for long-term specialization." },
+    love: { "zh-CN": "保守被动，顾虑重重，感情进展缓慢", "en": "Conservative and cautious; romantic progress moves slowly." },
+    study: { "zh-CN": "耐得住寂寞，死记硬背与钻研能力极强", "en": "Patient and dedicated; excels in deep research and memorization." },
+    strategy: { "zh-CN": "宜给予充足时间考虑，切忌催促做决定", "en": "Allow ample time for decisions; avoid rushing or pressing." }
+  },
+  "22": { 
+    name: "伏位", type: "吉", level: 1, 
+    career: { "zh-CN": "蓄势待发，专注耐力极强，适合长期深耕", "en": "Biding power; high endurance suited for long-term specialization." },
+    love: { "zh-CN": "保守被动，顾虑重重，感情进展缓慢", "en": "Conservative and cautious; romantic progress moves slowly." },
+    study: { "zh-CN": "耐得住寂寞，死记硬背与钻研能力极强", "en": "Patient and dedicated; excels in deep research and memorization." },
+    strategy: { "zh-CN": "宜给予充足时间考虑，切忌催促做决定", "en": "Allow ample time for decisions; avoid rushing or pressing." }
+  },
+  "88": { 
+    name: "伏位", type: "吉", level: 2, 
+    career: { "zh-CN": "稳扎稳打，按部就班，缺乏变通创新", "en": "Methodical and steady; relies on routines, occasionally lacking innovation." },
+    love: { "zh-CN": "习惯现状，害怕改变，感情较为平淡", "en": "Prefers status quo; reluctant to change, resulting in quiet routine." },
+    study: { "zh-CN": "循规蹈矩，按计划复习，表现平稳", "en": "Adheres to structured study plans; delivers consistent results." },
+    strategy: { "zh-CN": "宜提供清晰明确的标准流程与安全感", "en": "Provide clear procedures and a sense of stability." }
+  },
+  "99": { 
+    name: "伏位", type: "吉", level: 2, 
+    career: { "zh-CN": "稳扎稳打，按部就班，缺乏变通创新", "en": "Methodical and steady; relies on routines, occasionally lacking innovation." },
+    love: { "zh-CN": "习惯现状，害怕改变，感情较为平淡", "en": "Prefers status quo; reluctant to change, resulting in quiet routine." },
+    study: { "zh-CN": "循规蹈矩，按计划复习，表现平稳", "en": "Adheres to structured study plans; delivers consistent results." },
+    strategy: { "zh-CN": "宜提供清晰明确的标准流程与安全感", "en": "Provide clear procedures and a sense of stability." }
+  },
+  "77": { 
+    name: "伏位", type: "吉", level: 3, 
+    career: { "zh-CN": "谨慎过头，易错失良机，工作以守为主", "en": "Overly cautious; risks missing opportunities by playing overly defensive." },
+    love: { "zh-CN": "内心敏感脆弱，不敢轻易付出真心", "en": "Emotionally guarded; hesitates to fully open up." },
+    study: { "zh-CN": "较为被动，需要明确指令才能高效学习", "en": "Requires clear instructions to unlock productive study habits." },
+    strategy: { "zh-CN": "宜多给予鼓励，消除其内心的安全隐患", "en": "Reassure consistently to address underlying insecurities." }
+  },
+  "66": { 
+    name: "伏位", type: "吉", level: 3, 
+    career: { "zh-CN": "谨慎过头，易错失良机，工作以守为主", "en": "Overly cautious; risks missing opportunities by playing overly defensive." },
+    love: { "zh-CN": "内心敏感脆弱，不敢轻易付出真心", "en": "Emotionally guarded; hesitates to fully open up." },
+    study: { "zh-CN": "较为被动，需要明确指令才能高效学习", "en": "Requires clear instructions to unlock productive study habits." },
+    strategy: { "zh-CN": "宜多给予鼓励，消除其内心的安全隐患", "en": "Reassure consistently to address underlying insecurities." }
+  },
+  "33": { 
+    name: "伏位", type: "吉", level: 4, 
+    career: { "zh-CN": "犹豫不决，焦虑感强，工作进展缓慢", "en": "Indecisive with high anxiety; work progress can stall." },
+    love: { "zh-CN": "多疑顾虑，容易陷入冷战或僵局", "en": "Suspicious mindset; susceptible to stalemates or silent treatment." },
+    study: { "zh-CN": "容易焦虑不安，影响正常水平发挥", "en": "Prone to test anxiety, impacting performance under pressure." },
+    strategy: { "zh-CN": "宜耐心引导，创造无压力的交流环境", "en": "Guide patiently; build a comfortable, low-stress environment." }
+  },
+  "44": { 
+    name: "伏位", type: "吉", level: 4, 
+    career: { "zh-CN": "犹豫不决，焦虑感强，工作进展缓慢", "en": "Indecisive with high anxiety; work progress can stall." },
+    love: { "zh-CN": "多疑顾虑，容易陷入冷战或僵局", "en": "Suspicious mindset; susceptible to stalemates or silent treatment." },
+    study: { "zh-CN": "容易焦虑不安，影响正常水平发挥", "en": "Prone to test anxiety, impacting performance under pressure." },
+    strategy: { "zh-CN": "宜耐心引导，创造无压力的交流环境", "en": "Guide patiently; build a comfortable, low-stress environment." }
+  },
+
+  "12": { 
+    name: "绝命", type: "凶", level: 1, 
+    career: { "zh-CN": "大起大落，拼劲十足但易大起大落破财", "en": "High volatility; ambitious drive counterbalanced by financial instability." },
+    love: { "zh-CN": "敢爱敢恨，感情易走极端，离婚破裂率高", "en": "Passionate yet intense; prone to relationship extremes and conflict." },
+    study: { "zh-CN": "头脑灵活但缺乏耐心，成绩起伏极大", "en": "Quick thinker lacking patience; exam results fluctuate wildly." },
+    strategy: { "zh-CN": "宜帮其把控风险，切忌进行赌博式决策", "en": "Assist in managing risks; avoid encouraging high-stake gambles." }
+  },
+  "21": { 
+    name: "绝命", type: "凶", level: 1, 
+    career: { "zh-CN": "大起大落，拼劲十足但易大起大落破财", "en": "High volatility; ambitious drive counterbalanced by financial instability." },
+    love: { "zh-CN": "敢爱敢恨，感情易走极端，离婚破裂率高", "en": "Passionate yet intense; prone to relationship extremes and conflict." },
+    study: { "zh-CN": "头脑灵活但缺乏耐心，成绩起伏极大", "en": "Quick thinker lacking patience; exam results fluctuate wildly." },
+    strategy: { "zh-CN": "宜帮其把控风险，切忌进行赌博式决策", "en": "Assist in managing risks; avoid encouraging high-stake gambles." }
+  },
+  "96": { 
+    name: "绝命", type: "凶", level: 2, 
+    career: { "zh-CN": "冲动投资，好高骛远，易发生合同官司", "en": "Impulsive investments; risk of legal disputes or contract issues." },
+    love: { "zh-CN": "情绪化严重，冲动吵架，难以长久", "en": "Highly volatile temper; frequent arguments strain durability." },
+    study: { "zh-CN": "偏科严重，对感兴趣的科目极其投入", "en": "Uneven subject focus; heavily invests only in favored subjects." },
+    strategy: { "zh-CN": "宜保持冷静，避免在其冲动时做任何决定", "en": "Stay calm; defer decisions during impulsive moments." }
+  },
+  "69": { 
+    name: "绝命", type: "凶", level: 2, 
+    career: { "zh-CN": "冲动投资，好高骛远，易发生合同官司", "en": "Impulsive investments; risk of legal disputes or contract issues." },
+    love: { "zh-CN": "情绪化严重，冲动吵架，难以长久", "en": "Highly volatile temper; frequent arguments strain durability." },
+    study: { "zh-CN": "偏科严重，对感兴趣的科目极其投入", "en": "Uneven subject focus; heavily invests only in favored subjects." },
+    strategy: { "zh-CN": "宜保持冷静，避免在其冲动时做任何决定", "en": "Stay calm; defer decisions during impulsive moments." }
+  },
+  "84": { 
+    name: "绝命", type: "凶", level: 3, 
+    career: { "zh-CN": "辛苦破财，付出多回报少，防小人陷害", "en": "High effort for meager returns; vulnerable to office sabotage." },
+    love: { "zh-CN": "沟通困难，性格执拗，感情易生隔阂", "en": "Stubborn nature; communication barriers lead to distance." },
+    study: { "zh-CN": "缺乏持之以恒的毅力，容易半途而废", "en": "Lacks long-term perseverance; prone to giving up mid-way." },
+    strategy: { "zh-CN": "宜指出具体隐患，协助建立风险防线", "en": "Highlight potential pitfalls to build risk mitigation strategies." }
+  },
+  "48": { 
+    name: "绝命", type: "凶", level: 3, 
+    career: { "zh-CN": "辛苦破财，付出多回报少，防小人陷害", "en": "High effort for meager returns; vulnerable to office sabotage." },
+    love: { "zh-CN": "沟通困难，性格执拗，感情易生隔阂", "en": "Stubborn nature; communication barriers lead to distance." },
+    study: { "zh-CN": "缺乏持之以恒的毅力，容易半途而废", "en": "Lacks long-term perseverance; prone to giving up mid-way." },
+    strategy: { "zh-CN": "宜指出具体隐患，协助建立风险防线", "en": "Highlight potential pitfalls to build risk mitigation strategies." }
+  },
+  "73": { 
+    name: "绝命", type: "凶", level: 4, 
+    career: { "zh-CN": "小人作祟，财务吃紧，工作中易起纷争", "en": "Financial tightness; prone to petty conflicts at work." },
+    love: { "zh-CN": "脾气急躁，小事引爆矛盾，互不相让", "en": "Short fuse; small issues trigger unyielding standoffs." },
+    study: { "zh-CN": "注意力分散，难以沉下心来学习", "en": "Scattered attention; struggles to settle into focused study." },
+    strategy: { "zh-CN": "宜多安抚情绪，缓和紧张对立氛围", "en": "Soothe emotional flare-ups; de-escalate tension gently." }
+  },
+  "37": { 
+    name: "绝命", type: "凶", level: 4, 
+    career: { "zh-CN": "小人作祟，财务吃紧，工作中易起纷争", "en": "Financial tightness; prone to petty conflicts at work." },
+    love: { "zh-CN": "脾气急躁，小事引爆矛盾，互不相让", "en": "Short fuse; small issues trigger unyielding standoffs." },
+    study: { "zh-CN": "注意力分散，难以沉下心来学习", "en": "Scattered attention; struggles to settle into focused study." },
+    strategy: { "zh-CN": "宜多安抚情绪，缓和紧张对立氛围", "en": "Soothe emotional flare-ups; de-escalate tension gently." }
+  },
+
+  "18": { 
+    name: "五鬼", type: "凶", level: 1, 
+    career: { "zh-CN": "才华横溢但鬼点子多，工作变动极其频繁", "en": "Talented but erratic; experiences frequent job or career shifts." },
+    love: { "zh-CN": "疑心极重，易有三角恋或暗昧关系", "en": "High suspicion; prone to complex or ambiguous relationship situations." },
+    study: { "zh-CN": "思维跳跃极快，常有奇思妙想，但难持久", "en": "Fast, unconventional thinker; bursts of insight lack continuity." },
+    strategy: { "zh-CN": "宜坦诚相待，切忌隐瞒任何事实真相", "en": "Practice transparency; avoid concealing facts or details." }
+  },
+  "81": { 
+    name: "五鬼", type: "凶", level: 1, 
+    career: { "zh-CN": "才华横溢但鬼点子多，工作变动极其频繁", "en": "Talented but erratic; experiences frequent job or career shifts." },
+    love: { "zh-CN": "疑心极重，易有三角恋或暗昧关系", "en": "High suspicion; prone to complex or ambiguous relationship situations." },
+    study: { "zh-CN": "思维跳跃极快，常有奇思妙想，但难持久", "en": "Fast, unconventional thinker; bursts of insight lack continuity." },
+    strategy: { "zh-CN": "宜坦诚相待，切忌隐瞒任何事实真相", "en": "Practice transparency; avoid concealing facts or details." }
+  },
+  "79": { 
+    name: "五鬼", type: "凶", level: 2, 
+    career: { "zh-CN": "艺术与设计才华出众，但防暗破财与血光", "en": "Outstanding artistic talent; mind financial drains and minor hazards." },
+    love: { "zh-CN": "怀疑心强，暗中排查，感情缺乏信任感", "en": "Distrustful nature; constantly questions motives, harming intimacy." },
+    study: { "zh-CN": "偏爱课外杂书或偏门知识，影响主课成绩", "en": "Favors niche subjects over core academic requirements." },
+    strategy: { "zh-CN": "宜给予充足安全感，避免正面冲突或质问", "en": "Provide strong emotional security; minimize direct confrontation." }
+  },
+  "97": { 
+    name: "五鬼", type: "凶", level: 2, 
+    career: { "zh-CN": "艺术与设计才华出众，但防暗破财与血光", "en": "Outstanding artistic talent; mind financial drains and minor hazards." },
+    love: { "zh-CN": "怀疑心强，暗中排查，感情缺乏信任感", "en": "Distrustful nature; constantly questions motives, harming intimacy." },
+    study: { "zh-CN": "偏爱课外杂书或偏门知识，影响主课成绩", "en": "Favors niche subjects over core academic requirements." },
+    strategy: { "zh-CN": "宜给予充足安全感，避免正面冲突或质问", "en": "Provide strong emotional security; minimize direct confrontation." }
+  },
+  "63": { 
+    name: "五鬼", type: "凶", level: 3, 
+    career: { "zh-CN": "情绪不稳定，易因私心杂念影响工作大局", "en": "Unstable emotions; personal doubts impact broader productivity." },
+    love: { "zh-CN": "阴晴不定，心思难以捉摸，令人疲惫", "en": "Unpredictable moods; creates emotional fatigue for partners." },
+    study: { "zh-CN": "易走神发呆，思维不集中，成绩下滑", "en": "Prone to daydreaming; unfocused study leads to declining scores." },
+    strategy: { "zh-CN": "宜关注其心理变化，适时给予正面引导", "en": "Monitor emotional shifts and offer timely positive reinforcement." }
+  },
+  "36": { 
+    name: "五鬼", type: "凶", level: 3, 
+    career: { "zh-CN": "情绪不稳定，易因私心杂念影响工作大局", "en": "Unstable emotions; personal doubts impact broader productivity." },
+    love: { "zh-CN": "阴晴不定，心思难以捉摸，令人疲惫", "en": "Unpredictable moods; creates emotional fatigue for partners." },
+    study: { "zh-CN": "易走神发呆，思维不集中，成绩下滑", "en": "Prone to daydreaming; unfocused study leads to declining scores." },
+    strategy: { "zh-CN": "宜关注其心理变化，适时给予正面引导", "en": "Monitor emotional shifts and offer timely positive reinforcement." }
+  },
+  "24": { 
+    name: "五鬼", type: "凶", level: 4, 
+    career: { "zh-CN": "小灵感不断，但缺乏落地能力，易陷入空想", "en": "Frequent ideas lacking execution; risks over-thinking without action." },
+    love: { "zh-CN": "敏感多疑，因微小细节起疑心", "en": "Overly sensitive; easily troubled by minor details." },
+    study: { "zh-CN": "小聪明多但基础不扎实，考试易粗心", "en": "Clever but lacks solid foundations; prone to careless mistakes." },
+    strategy: { "zh-CN": "宜引导其将想法落地，少谈空洞理念", "en": "Guide concepts into tangible actions; minimize abstract debate." }
+  },
+  "42": { 
+    name: "五鬼", type: "凶", level: 4, 
+    career: { "zh-CN": "小灵感不断，但缺乏落地能力，易陷入空想", "en": "Frequent ideas lacking execution; risks over-thinking without action." },
+    love: { "zh-CN": "敏感多疑，因微小细节起疑心", "en": "Overly sensitive; easily troubled by minor details." },
+    study: { "zh-CN": "小聪明多但基础不扎实，考试易粗心", "en": "Clever but lacks solid foundations; prone to careless mistakes." },
+    strategy: { "zh-CN": "宜引导其将想法落地，少谈空洞理念", "en": "Guide concepts into tangible actions; minimize abstract debate." }
+  },
+
+  "16": { 
+    name: "六煞", type: "凶", level: 1, 
+    career: { "zh-CN": "人际关系极其复杂，易受情困或服务业破财", "en": "Complex interpersonal ties; risk of financial or emotional entanglements." },
+    love: { "zh-CN": "偏桃花极旺，情感丰富但多情自困，易有婚外情", "en": "High romantic magnetism; emotional over-involvement causes drama." },
+    study: { "zh-CN": "易受审美或恋爱影响学习，心思不在书本", "en": "Easily distracted by social or romantic affairs over academics." },
+    strategy: { "zh-CN": "宜多关怀其情感需求，避免冷漠忽视", "en": "Acknowledge emotional needs; avoid appearing distant or aloof." }
+  },
+  "61": { 
+    name: "六煞", type: "凶", level: 1, 
+    career: { "zh-CN": "人际关系极其复杂，易受情困或服务业破财", "en": "Complex interpersonal ties; risk of financial or emotional entanglements." },
+    love: { "zh-CN": "偏桃花极旺，情感丰富但多情自困，易有婚外情", "en": "High romantic magnetism; emotional over-involvement causes drama." },
+    study: { "zh-CN": "易受审美或恋爱影响学习，心思不在书本", "en": "Easily distracted by social or romantic affairs over academics." },
+    strategy: { "zh-CN": "宜多关怀其情感需求，避免冷漠忽视", "en": "Acknowledge emotional needs; avoid appearing distant or aloof." }
+  },
+  "47": { 
+    name: "六煞", type: "凶", level: 2, 
+    career: { "zh-CN": "亲和力强，适合公关服务，但防人际内耗", "en": "Strong charisma suits PR/services; watch out for interpersonal burnout." },
+    love: { "zh-CN": "心思细腻脆弱，依赖感强，极易患得患失", "en": "Sensitive and dependent; prone to fear of loss in relationships." },
+    study: { "zh-CN": "情绪化严重，心情好坏直接决定学习成绩", "en": "Highly mood-dependent; emotions directly impact performance." },
+    strategy: { "zh-CN": "宜营造温馨和谐的环境，给予情感支撑", "en": "Create a warm environment and provide reliable emotional support." }
+  },
+  "74": { 
+    name: "六煞", type: "凶", level: 2, 
+    career: { "zh-CN": "亲和力强，适合公关服务，但防人际内耗", "en": "Strong charisma suits PR/services; watch out for interpersonal burnout." },
+    love: { "zh-CN": "心思细腻脆弱，依赖感强，极易患得患失", "en": "Sensitive and dependent; prone to fear of loss in relationships." },
+    study: { "zh-CN": "情绪化严重，心情好坏直接决定学习成绩", "en": "Highly mood-dependent; emotions directly impact performance." },
+    strategy: { "zh-CN": "宜营造温馨和谐的环境，给予情感支撑", "en": "Create a warm environment and provide reliable emotional support." }
+  },
+  "38": { 
+    name: "六煞", type: "凶", level: 3, 
+    career: { "zh-CN": "工作易带情绪，人际沟通成本高，耗费精力", "en": "Brings moods to work; high interpersonal communication overhead." },
+    love: { "zh-CN": "爱生闷气，喜欢让对方猜心思，沟通受阻", "en": "Prone to brooding; expects partner to guess feelings, stalling dialogue." },
+    study: { "zh-CN": "易受人际关系或同学矛盾干扰，注意力分散", "en": "Distracted by peer drama or social friction." },
+    strategy: { "zh-CN": "宜主动关心沟通，切忌拉开距离或冷处理", "en": "Initiate open dialogue; avoid silent treatment or detachment." }
+  },
+  "83": { 
+    name: "六煞", type: "凶", level: 3, 
+    career: { "zh-CN": "工作易带情绪，人际沟通成本高，耗费精力", "en": "Brings moods to work; high interpersonal communication overhead." },
+    love: { "zh-CN": "爱生闷气，喜欢让对方猜心思，沟通受阻", "en": "Prone to brooding; expects partner to guess feelings, stalling dialogue." },
+    study: { "zh-CN": "易受人际关系或同学矛盾干扰，注意力分散", "en": "Distracted by peer drama or social friction." },
+    strategy: { "zh-CN": "宜主动关心沟通，切忌拉开距离或冷处理", "en": "Initiate open dialogue; avoid silent treatment or detachment." }
+  },
+  "29": { 
+    name: "六煞", type: "凶", level: 4, 
+    career: { "zh-CN": "能力尚可但情绪脆弱，抗压能力较弱", "en": "Capable but emotionally fragile; vulnerable under high pressure." },
+    love: { "zh-CN": "小女人/小男人心态，极度缺乏安全感", "en": "Requires constant affirmation; deeply insecure." },
+    study: { "zh-CN": "遇挫折易放弃，需要多鼓励认可", "en": "Easily discouraged by setbacks; thrives on encouragement." },
+    strategy: { "zh-CN": "宜温和包容，多给予正面赞美与鼓励", "en": "Show gentle patience; offer frequent praise and reassurance." }
+  },
+  "92": { 
+    name: "六煞", type: "凶", level: 4, 
+    career: { "zh-CN": "能力尚可但情绪脆弱，抗压能力较弱", "en": "Capable but emotionally fragile; vulnerable under high pressure." },
+    love: { "zh-CN": "小女人/小男人心态，极度缺乏安全感", "en": "Requires constant affirmation; deeply insecure." },
+    study: { "zh-CN": "遇挫折易放弃，需要多鼓励认可", "en": "Easily discouraged by setbacks; thrives on encouragement." },
+    strategy: { "zh-CN": "宜温和包容，多给予正面赞美与鼓励", "en": "Show gentle patience; offer frequent praise and reassurance." }
+  },
+
+  "17": { 
+    name: "祸害", type: "凶", level: 1, 
+    career: { "zh-CN": "口舌官非极其严重，硬嘴逞强，易得罪小人", "en": "High risk of verbal conflicts; defensive attitude risks alienating allies." },
+    love: { "zh-CN": "口角不断，言语伤人，夫妻经常吵架", "en": "Frequent sharp arguments; harsh words damage partner trust." },
+    study: { "zh-CN": "爱辩驳发问，但缺乏实际行动与落实", "en": "Enjoys debating questions but lacks execution in follow-through." },
+    strategy: { "zh-CN": "宜多听少说，切忌与其在言语上争高低", "en": "Listen more and speak less; refrain from verbal arguments." }
+  },
+  "71": { 
+    name: "祸害", type: "凶", level: 1, 
+    career: { "zh-CN": "口舌官非极其严重，硬嘴逞强，易得罪小人", "en": "High risk of verbal conflicts; defensive attitude risks alienating allies." },
+    love: { "zh-CN": "口角不断，言语伤人，夫妻经常吵架", "en": "Frequent sharp arguments; harsh words damage partner trust." },
+    study: { "zh-CN": "爱辩驳发问，但缺乏实际行动与落实", "en": "Enjoys debating questions but lacks execution in follow-through." },
+    strategy: { "zh-CN": "宜多听少说，切忌与其在言语上争高低", "en": "Listen more and speak less; refrain from verbal arguments." }
+  },
+  "89": { 
+    name: "祸害", type: "凶", level: 2, 
+    career: { "zh-CN": "靠口才吃饭（销售/讲师），但防身体呼吸道疾病", "en": "Profits from speaking (sales/teaching); take care of respiratory health." },
+    love: { "zh-CN": "嘴硬心软，虽然占口头便宜但伤感情", "en": "Sharp tongue with a soft heart; verbal wins weaken romance." },
+    study: { "zh-CN": "口头表达能力强，但书面落实功底不足", "en": "Strong oral expression; writing and documentation need work." },
+    strategy: { "zh-CN": "宜赞美其口才，顺水推舟引导其理性思考", "en": "Praise eloquent skills while gently guiding toward practical logic." }
+  },
+  "98": { 
+    name: "祸害", type: "凶", level: 2, 
+    career: { "zh-CN": "靠口才吃饭（销售/讲师），但防身体呼吸道疾病", "en": "Profits from speaking (sales/teaching); take care of respiratory health." },
+    love: { "zh-CN": "嘴硬心软，虽然占口头便宜但伤感情", "en": "Sharp tongue with a soft heart; verbal wins weaken romance." },
+    study: { "zh-CN": "口头表达能力强，但书面落实功底不足", "en": "Strong oral expression; writing and documentation need work." },
+    strategy: { "zh-CN": "宜赞美其口才，顺水推舟引导其理性思考", "en": "Praise eloquent skills while gently guiding toward practical logic." }
+  },
+  "64": { 
+    name: "祸害", type: "凶", level: 3, 
+    career: { "zh-CN": "爱抱怨挑剔，团队人际关系紧张，小人作祟", "en": "Critical attitude creates workplace friction; beware of gossip." },
+    love: { "zh-CN": "互相指责抱怨，感情在吵架中消耗殆尽", "en": "Mutual complaints erode relationship intimacy." },
+    study: { "zh-CN": "易受外界噪音干扰，静不下心读书", "en": "Sensitive to noise or environmental distractions." },
+    strategy: { "zh-CN": "宜多倾听其抱怨发泄，切忌当面反驳", "en": "Listen empathetically to grievances; avoid arguing back." }
+  },
+  "46": { 
+    name: "祸害", type: "凶", level: 3, 
+    career: { "zh-CN": "爱抱怨挑剔，团队人际关系紧张，小人作祟", "en": "Critical attitude creates workplace friction; beware of gossip." },
+    love: { "zh-CN": "互相指责抱怨，感情在吵架中消耗殆尽", "en": "Mutual complaints erode relationship intimacy." },
+    study: { "zh-CN": "易受外界噪音干扰，静不下心读书", "en": "Sensitive to noise or environmental distractions." },
+    strategy: { "zh-CN": "宜多倾听其抱怨发泄，切忌当面反驳", "en": "Listen empathetically to grievances; avoid arguing back." }
+  },
+  "23": { 
+    name: "祸害", type: "凶", level: 4, 
+    career: { "zh-CN": "小嘴碎念，虽无大害但影响职场人际好感", "en": "Minor nagging; harms workplace goodwill slightly." },
+    love: { "zh-CN": "碎碎念不断，导致对方厌烦逃避", "en": "Constant nitpicking causes emotional withdrawal." },
+    study: { "zh-CN": "学习易浮于表面，缺乏深度思考", "en": "Superficial study habits; benefits from deeper focus." },
+    strategy: { "zh-CN": "宜一笑置之，不必过分在意其口头言语", "en": "Dismiss petty remarks lightly; avoid taking minor complaints to heart." }
+  },
+  "32": { 
+    name: "祸害", type: "凶", level: 4, 
+    career: { "zh-CN": "小嘴碎念，虽无大害但影响职场人际好感", "en": "Minor nagging; harms workplace goodwill slightly." },
+    love: { "zh-CN": "碎碎念不断，导致对方厌烦逃避", "en": "Constant nitpicking causes emotional withdrawal." },
+    study: { "zh-CN": "学习易浮于表面，缺乏深度思考", "en": "Superficial study habits; benefits from deeper focus." },
+    strategy: { "zh-CN": "宜一笑置之，不必过分在意其口头言语", "en": "Dismiss petty remarks lightly; avoid taking minor complaints to heart." }
+  }
+};
+
+const CAREER_RULES = {
+  executive: {
+    neededStar: "延年",
+    pts: 8,
+    zh: { title: "企业高管 / 领导管理", desc: "高管急需【延年】星提升决策掌控力与管理权威。", match: "号码中包含延年星，契合高管领导力掌控需求 (+8分)", lack: "缺延年星，缺乏领导统御气场，建议补充 19/91 或 78/87 组合。" },
+    en: { title: "Executive / Senior Management", desc: "Executives require Yan Nian for leadership authority.", match: "Contains Yan Nian star; matches management needs (+8 pts)", lack: "Lacks Yan Nian; suggest adding 19/91 or 78/87 for leadership power." }
+  },
+  sales: {
+    neededStar: "生气",
+    pts: 8,
+    zh: { title: "市场销售 / 商务拓展", desc: "销售急需【生气】人脉星与【天医】财星生助。", match: "号码中包含生气/天医，贵人运强助成单销售 (+8分)", lack: "缺生气贵人星，拓展新客户较吃力，建议补充 14/41 组合。" },
+    en: { title: "Sales / Business Development", desc: "Sales professionals require Sheng Qi for network & rapport.", match: "Contains Sheng Qi/Tian Yi; boosts client conversion (+8 pts)", lack: "Lacks Sheng Qi network star; suggest adding 14/41." }
+  },
+  business: {
+    neededStar: "天医",
+    pts: 8,
+    zh: { title: "创业者 / 企业老板", desc: "创业者急需【天医】正财与【延年】落地产能。", match: "号码包含天医财星，符合企业现金流与商业变化需求 (+8分)", lack: "缺天医财星，创业易流于空想，建议补充 13/31 正财磁场。" },
+    en: { title: "Entrepreneur / Business Owner", desc: "Entrepreneurs require Tian Yi wealth star for cash flow.", match: "Contains Tian Yi wealth star; aligns with revenue growth (+8 pts)", lack: "Lacks Tian Yi wealth star; suggest adding 13/31." }
+  },
+  finance: {
+    neededStar: "延年",
+    pts: 8,
+    zh: { title: "金融投资 / 财税理财", desc: "金融业需【延年】严谨理性与【伏位】精细计算。", match: "号码包含延年/伏位理智组合，控制风险能力佳 (+8分)", lack: "缺乏延年理智磁场，金融投资需防破财，建议配置 19/91 或 77/88。" },
+    en: { title: "Finance / Investment / Accounting", desc: "Finance professionals require Yan Nian and Fu Wei for analytical rigor.", match: "Contains Yan Nian/Fu Wei; enhances risk control (+8 pts)", lack: "Lacks Yan Nian discipline; suggest adding 19/91 or 77/88." }
+  },
+  tech: {
+    neededStar: "伏位",
+    pts: 8,
+    zh: { title: "技术研发 / IT工程师", desc: "研发技术人员需【伏位】专注深入与【延年】钻研。", match: "号码具备伏位/延年专注磁场，利于技术攻坚 (+8分)", lack: "缺乏伏位专注磁场，研发易浮躁，建议搭配 11/22 伏位持久力。" },
+    en: { title: "Tech R&D / IT Engineer", desc: "Developers require Fu Wei star for deep focus and precision.", match: "Contains Fu Wei star; aids technical focus (+8 pts)", lack: "Lacks Fu Wei endurance star; suggest adding 11/22 or 33/44." }
+  },
+  creative: {
+    neededStar: "五鬼",
+    pts: 8,
+    zh: { title: "自媒体 / 艺术创意", desc: "创意自媒体需【五鬼】奇思妙想与【六煞】细腻审美。", match: "号码中包含五鬼/六煞磁场，灵感源源不断 (+8分)", lack: "缺乏五鬼灵感星，作品易缺乏新意，建议适度配置 18/81 或 61/16。" },
+    en: { title: "Media Content / Creative Arts", desc: "Creatives need Wu Gui for inspiration and Liu Sha for aesthetics.", match: "Contains Wu Gui/Liu Sha; inspires high creativity (+8 pts)", lack: "Lacks Wu Gui inspiration star; suggest adding 18/81 or 61/16." }
+  },
+  student: {
+    neededStar: "生气",
+    pts: 8,
+    zh: { title: "学生 / 学术科研", desc: "求学者需要【生气】文昌功名与【延年】自律。", match: "号码中包含生气/延年，有利于逻辑思维与考试运 (+8分)", lack: "缺乏生气文昌星，建议增加 14/41 或 43/34 助学业功名。" },
+    en: { title: "Student / Academic Researcher", desc: "Students require Sheng Qi & Yan Nian for academic success.", match: "Contains Sheng Qi/Yan Nian; aids study & exams (+8 pts)", lack: "Lacks Sheng Qi academic star; suggest adding 14/41 or 43/34." }
+  }
+};
+
+document.getElementById("numInput").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") analyzeNumber(true);
+});
+
+function triggerAutoAnalyze() {
+  if (document.getElementById("resultSection").style.display === "flex") {
+    analyzeNumber(false);
+  }
+}
+
+function changeLanguage(lang) {
+  currentLang = lang;
+  const t = I18N[lang] || I18N["zh-CN"];
+  document.getElementById("docTitle").innerText = t.docTitle;
+  document.getElementById("appTitle").innerText = t.appTitle;
+  document.getElementById("appSub").innerText = t.appSub;
+  document.getElementById("lblLang").innerText = t.lblLang;
+  document.getElementById("lblUserName").innerText = t.lblUserName;
+  document.getElementById("userName").placeholder = t.userNamePlaceholder;
+  document.getElementById("lblUserGender").innerText = t.lblUserGender;
+  document.getElementById("optGenderDefault").innerText = t.optGenderDefault;
+  document.getElementById("optMale").innerText = t.optMale;
+  document.getElementById("optFemale").innerText = t.optFemale;
+  document.getElementById("lblUserCareer").innerText = t.lblUserCareer;
+  document.getElementById("optCareerDefault").innerText = t.optCareerDefault;
+  document.getElementById("optCareerExec").innerText = t.optCareerExec;
+  document.getElementById("optCareerSales").innerText = t.optCareerSales;
+  document.getElementById("optCareerBiz").innerText = t.optCareerBiz;
+  document.getElementById("optCareerFin").innerText = t.optCareerFin;
+  document.getElementById("optCareerTech").innerText = t.optCareerTech;
+  document.getElementById("optCareerMedia").innerText = t.optCareerMedia;
+  document.getElementById("optCareerEdu").innerText = t.optCareerEdu;
+  document.getElementById("lblUserDob").innerText = t.lblUserDob;
+  document.getElementById("optSolar").innerText = t.optSolar;
+  document.getElementById("optLunar").innerText = t.optLunar;
+  document.getElementById("lblUserHour").innerText = t.lblUserHour;
+  document.getElementById("optHourUnknown").innerText = t.optHourUnknown;
+  document.getElementById("optHourZi").innerText = t.optHourZi;
+  document.getElementById("optHourChou").innerText = t.optHourChou;
+  document.getElementById("optHourYin").innerText = t.optHourYin;
+  document.getElementById("optHourMao").innerText = t.optHourMao;
+  document.getElementById("optHourChen").innerText = t.optHourChen;
+  document.getElementById("optHourSi").innerText = t.optHourSi;
+  document.getElementById("optHourWu").innerText = t.optHourWu;
+  document.getElementById("optHourWei").innerText = t.optHourWei;
+  document.getElementById("optHourShen").innerText = t.optHourShen;
+  document.getElementById("optHourYou").innerText = t.optHourYou;
+  document.getElementById("optHourXu").innerText = t.optHourXu;
+  document.getElementById("optHourHai").innerText = t.optHourHai;
+  document.getElementById("lblNumInput").innerText = t.lblNumInput;
+  document.getElementById("numInput").placeholder = t.numPlaceholder;
+  document.getElementById("btnAnalyze").innerText = t.btnAnalyze;
+  document.getElementById("summarySearchTitle").innerText = t.summarySearchTitle;
+  document.getElementById("titleOverallScore").innerText = t.titleOverallScore;
+  document.getElementById("scoreNoteTitle").innerText = t.scoreNoteTitle;
+  document.getElementById("scoreNoteText").innerText = t.scoreNoteText;
+  document.getElementById("titleBaziBlueprint").innerText = t.titleBaziBlueprint;
+  document.getElementById("titleTenYearLuck").innerText = t.titleTenYearLuck;
+  document.getElementById("titlePairsBreakdown").innerText = t.titlePairsBreakdown;
+  document.getElementById("titlePros").innerText = t.titlePros;
+  document.getElementById("titleCons").innerText = t.titleCons;
+  document.getElementById("titleEvalLogic").innerText = t.titleEvalLogic;
+  document.getElementById("titleRuleChecks").innerText = t.titleRuleChecks;
+  document.getElementById("summaryRecom").innerText = t.summaryRecom;
+  document.getElementById("titleDimensions").innerText = t.titleDimensions;
+  document.getElementById("titleElemGuide").innerText = t.titleElemGuide;
+  document.getElementById("thDimension").innerText = t.thDimension;
+  document.getElementById("thScore").innerText = t.thScore;
+  document.getElementById("thAnalysis").innerText = t.thAnalysis;
+
+  if (document.getElementById("resultSection").style.display === "flex") {
+    analyzeNumber(false);
+  }
+}
+
+function calculateMingGua(year, gender) {
+  if (!gender || gender === "unset" || gender === "") gender = "male"; 
+  let sum = 0;
+  let yearStr = year.toString();
+  for (let char of yearStr) sum += parseInt(char);
+  
+  while (sum > 9) {
+    let temp = 0;
+    sum.toString().split('').forEach(d => temp += parseInt(d));
+    sum = temp;
+  }
+
+  let guaNum = 0;
+  if (gender === "male") {
+    guaNum = (11 - sum) % 9;
+    if (guaNum === 0) guaNum = 9;
+    if (guaNum === 5) guaNum = 2;
+  } else {
+    guaNum = (sum + 4) % 9;
+    if (guaNum === 0) guaNum = 9;
+    if (guaNum === 5) guaNum = 8;
+  }
+  return MING_GUA_DATA[guaNum] || MING_GUA_DATA[2];
+}
+
+function deriveBaZi(dateStr, hourVal, calendarType) {
+  if (!dateStr) return null;
+  let rawDate = new Date(dateStr);
+  if (isNaN(rawDate.getTime())) return null;
+
+  let d = new Date(rawDate);
+  if (calendarType === "lunar") {
+    d.setDate(d.getDate() + 30);
+  }
+
+  let year = d.getFullYear();
+  let month = d.getMonth() + 1;
+
+  let yearStemIdx = (year - 4) % 10;
+  if (yearStemIdx < 0) yearStemIdx += 10;
+  let yearBranchIdx = (year - 4) % 12;
+  if (yearBranchIdx < 0) yearBranchIdx += 12;
+
+  let monthBranchIdx = (month + 1) % 12;
+  let monthStemIdx = (yearStemIdx * 2 + month) % 10;
+
+  const baseDate = new Date(1900, 0, 31);
+  const diffDays = Math.floor((d - baseDate) / (86400000));
+  let dayStemIdx = (diffDays) % 10;
+  if (dayStemIdx < 0) dayStemIdx += 10;
+  let dayBranchIdx = (diffDays + 10) % 12;
+  if (dayBranchIdx < 0) dayBranchIdx += 12;
+
+  let hourStemIdx = 0, hourBranchIdx = 0;
+  if (hourVal >= 0) {
+    hourBranchIdx = Math.floor((parseInt(hourVal) + 1) / 2) % 12;
+    hourStemIdx = (dayStemIdx * 2 + hourBranchIdx) % 10;
+  }
+
+  const pillars = {
+    year: { stem: STEMS[yearStemIdx], branch: BRANCHES[yearBranchIdx] },
+    month: { stem: STEMS[monthStemIdx], branch: BRANCHES[monthBranchIdx] },
+    day: { stem: STEMS[dayStemIdx], branch: BRANCHES[dayBranchIdx] },
+    hour: hourVal >= 0 ? { stem: STEMS[hourStemIdx], branch: BRANCHES[hourBranchIdx] } : null
+  };
+
+  let elemCounts = { "木": 0, "火": 0, "土": 0, "金": 0, "水": 0 };
+  
+  [pillars.year, pillars.month, pillars.day, pillars.hour].forEach(p => {
+    if (p) {
+      elemCounts[STEM_ELEMENTS[p.stem]]++;
+      elemCounts[BRANCH_ELEMENTS[p.branch]]++;
+    }
+  });
+
+  const dayMaster = STEMS[dayStemIdx];
+  const dayMasterElem = STEM_ELEMENTS[dayMaster];
+
+  let missing = [];
+  let strong = [];
+  for (let elem in elemCounts) {
+    if (elemCounts[elem] === 0) missing.push(elem);
+    if (elemCounts[elem] >= 3) strong.push(elem);
+  }
+
+  let usefulElement = missing.length > 0 ? missing[0] : (strong.length > 0 ? (strong[0] === "木"?"金":strong[0]==="火"?"水":strong[0]==="土"?"木":strong[0]==="金"?"火":"土") : "木");
+
+  return {
+    pillars,
+    dayMaster,
+    dayMasterElem,
+    monthStemIdx,
+    monthBranchIdx,
+    yearStemIdx,
+    elemCounts,
+    missing,
+    strong,
+    usefulElement,
+    effectiveDate: d
+  };
+}
+
+function calculateTenYearLuck(baziData, gender) {
+  if (!baziData) return [];
+  
+  let startAge = 6;
+  let isYangYear = baziData.yearStemIdx % 2 === 0;
+  let isMale = gender !== "female";
+  let forward = (isYangYear && isMale) || (!isYangYear && !isMale);
+
+  let luckPillars = [];
+  let curStemIdx = baziData.monthStemIdx;
+  let curBranchIdx = baziData.monthBranchIdx;
+
+  for (let i = 0; i < 8; i++) {
+    if (forward) {
+      curStemIdx = (curStemIdx + 1) % 10;
+      curBranchIdx = (curBranchIdx + 1) % 12;
+    } else {
+      curStemIdx = (curStemIdx - 1 + 10) % 10;
+      curBranchIdx = (curBranchIdx - 1 + 12) % 12;
+    }
+
+    let stem = STEMS[curStemIdx];
+    let branch = BRANCHES[curBranchIdx];
+    let stemElem = STEM_ELEMENTS[stem];
+    let branchElem = BRANCH_ELEMENTS[branch];
+    
+    let desc = "";
+    const isLangEn = currentLang === 'en';
+    const t = I18N[currentLang] || I18N["zh-CN"];
+
+    let stemName = t.stems[stem];
+    let branchName = t.branches[branch];
+    let stemElemName = t.elements[stemElem];
+    let branchElemName = t.elements[branchElem];
+
+    if (isLangEn) {
+      desc = `Decade elemental theme: ${stemElemName} over ${branchElemName}. This period influences your core focus, resource management, and emotional or career stability. Focus on balancing elemental strengths during these years.`;
+    } else {
+      let relationNote = "";
+      if (stemElem === baziData.dayMasterElem) {
+        relationNote = "此十年比劫旺盛，利于拓展人脉、同行竞争与合作，但也需防范开支过大或竞争压力。";
+      } else if (stemElem === "木" && baziData.dayMasterElem === "火" || stemElem === "火" && baziData.dayMasterElem === "土" || stemElem === "土" && baziData.dayMasterElem === "金" || stemElem === "金" && baziData.dayMasterElem === "水" || stemElem === "水" && baziData.dayMasterElem === "木") {
+        relationNote = "此十年食伤泄秀或印绶生身，思维敏捷，贵人运较强，利于学习进修、技术突破或名声建立。";
+      } else {
+        relationNote = "此十年财官相生，主事业机遇与财富积累。若逢喜用神则顺风顺水，若逢忌神则需步步为营、稳健防守。";
+      }
+      desc = `天干【${stem}(${stemElem})】地支【${branch}(${branchElem})】交替。${relationNote}`;
+    }
+
+    luckPillars.push({
+      startAge: startAge + (i * 10),
+      endAge: startAge + (i * 10) + 9,
+      stemName,
+      branchName,
+      stemElemName,
+      branchElemName,
+      desc
+    });
+  }
+
+  return luckPillars;
+}
+
+function cleanNumber(str) { return str.replace(/[^\d]/g, ''); }
+function processZeroAndFive(numStr) { return numStr.replace(/0+/g, '').replace(/5+/g, ''); }
+
+function buildPolarityRuleChecks(cleaned, pairs, polarityAdjust, t) {
+  const checks = [];
+  const validCodes = new Set(pairs.map(p => p.code));
+
+  function fieldLabel(code) {
+    const p = pairs.find(x => x.code === code);
+    const name = p ? (t.starNames[p.name] || p.name) : code;
+    return currentLang === 'en' ? `${code} (${name})` : `${code}（${name}）`;
+  }
+
+  function buildPairMeta() {
+    const meta = [];
+    const digits = [...cleaned];
+    const normal = [];
+    digits.forEach((d, i) => {
+      if (d !== '0' && d !== '5') normal.push({ d, i });
+    });
+    for (let i = 0; i < normal.length - 1; i++) {
+      const code = normal[i].d + normal[i + 1].d;
+      if (validCodes.has(code)) {
+        meta.push({ code, a: normal[i].i, b: normal[i + 1].i });
+      }
+    }
+    return meta;
+  }
+
+  const pairMeta = buildPairMeta();
+
+  function getAffectedMeta(index) {
+    const left = [...cleaned.slice(0, index)].reverse().find(d => d !== '0' && d !== '5');
+    const right = [...cleaned.slice(index + 1)].find(d => d !== '0' && d !== '5');
+    const leftIndex = (() => {
+      for (let i = index - 1; i >= 0; i--) if (cleaned[i] !== '0' && cleaned[i] !== '5') return i;
+      return -1;
+    })();
+    const rightIndex = (() => {
+      for (let i = index + 1; i < cleaned.length; i++) if (cleaned[i] !== '0' && cleaned[i] !== '5') return i;
+      return -1;
+    })();
+    if (!left && !right) return [];
+    return pairMeta.filter(m => m.a === leftIndex || m.b === leftIndex || m.a === rightIndex || m.b === rightIndex);
+  }
+
+  function buildOrderedChain(index) {
+    // Preserve the exact number order. A three-digit block around 0/5 is the core.
+    const special = cleaned[index];
+    const parts = [];
+
+    const leftPair = pairMeta
+      .filter(m => m.b < index)
+      .sort((a, b) => b.b - a.b)[0];
+    const rightPair = pairMeta
+      .filter(m => m.a > index)
+      .sort((a, b) => a.a - b.a)[0];
+
+    if (leftPair) {
+      parts.push({ pos: leftPair.a, html: fieldLabel(leftPair.code), code: leftPair.code });
+    }
+
+    const coreStart = Math.max(0, index - 1);
+    const coreEnd = Math.min(cleaned.length - 1, index + 1);
+    const coreRaw = cleaned.slice(coreStart, coreEnd + 1);
+    const coreDigits = [...coreRaw].filter(d => d !== '0' && d !== '5');
+    const coreCode = coreDigits.join('');
+    const coreField = validCodes.has(coreCode) ? fieldLabel(coreCode) : '';
+    const coreText = currentLang === 'en'
+      ? `${coreRaw} (core)${coreField ? `(${coreField})` : ''}`
+      : `${coreRaw}（核心）${coreField ? `（${coreField}）` : ''}`;
+
+    parts.push({ pos: index, html: coreText, special: special, coreCode: coreCode });
+
+    if (rightPair) {
+      parts.push({ pos: rightPair.b, html: fieldLabel(rightPair.code), code: rightPair.code });
+    }
+
+    return parts;
+  }
+
+  [...cleaned].forEach((digit, index) => {
+    if (digit !== '0' && digit !== '5') return;
+    const affectedMeta = getAffectedMeta(index);
+    const targets = affectedMeta.map(m => m.code);
+    const position = `${index + 1}/${cleaned.length}`;
+    const chainTokens = buildOrderedChain(index);
+    const chain = chainTokens.map(tok => tok.html).join(' → ');
+
+    if (digit === '5') {
+      if (targets.length) {
+        const score = Math.min(12, targets.length * 4);
+        checks.push(`<div class="polarity-detail"><strong>${t.polarityMechanismTitle}</strong><br>${t.polarityFiveExplain}<div class="polarity-chain"><div class="polarity-chain-label">${t.polarityChainLabel}</div>${chain}</div><b>${t.polarityInterpretLabel}:</b> ${t.polarityFiveInterpret}<br><span style="color:var(--text-muted);">${t.polarityNoteLabel}: ${t.polarityFiveNote}</span></div>`);
+      } else {
+        checks.push(`<div class="polarity-detail"><strong>${t.polarityMechanismTitle}</strong><br>${t.polarityFiveNeutral}<br><b>${t.polarityTriggerLabel}:</b> ${position}<br><span style="color:var(--text-muted);">${t.polarityNoTrigger}</span></div>`);
+      }
+    } else if (index > 0 && index < cleaned.length - 1) {
+      if (targets.length) {
+        const score = Math.min(12, targets.length * 4);
+        checks.push(`<div class="polarity-detail"><strong>${t.polarityMechanismTitle}</strong><br>${t.polarityZeroExplain}<div class="polarity-chain"><div class="polarity-chain-label">${t.polarityChainLabel}</div>${chain}</div><b>${t.polarityInterpretLabel}:</b> ${t.polarityZeroInterpret}<br><span style="color:var(--text-muted);">${t.polarityNoteLabel}: ${t.polarityZeroNote}</span></div>`);
+      }
+    } else if (digit === '0' && index === cleaned.length - 1) {
+      checks.push(`<div class="polarity-detail"><strong>${t.polarityMechanismTitle}</strong><br>${t.polarityTailZeroExplain}<br><b>${t.polarityTriggerLabel}:</b> ${currentLang === 'en' ? 'Terminal 0' : '尾号 0'}<br><b>${t.polarityInterpretLabel}:</b> ${currentLang === 'en' ? 'The rule acts directly on the end state and is handled separately by the terminal-collapse rule.' : '该规则直接作用于号码终局，并由尾号坍缩规则独立处理。'}</div>`);
+    }
+  });
+
+  if (!checks.length) {
+    checks.push(`<div class="polarity-detail"><strong>${t.polarityMechanismTitle}</strong><br>${t.polarityNoTrigger}</div>`);
+  }
+  return checks;
+}
+
+function analyzeNumber(showAlert = true) {
+  const t = I18N[currentLang] || I18N["zh-CN"];
+  const rawInput = document.getElementById("numInput").value;
+  const cleaned = cleanNumber(rawInput);
+  
+  if (cleaned.length < 2) {
+    if (showAlert) alert(t.alertInput);
+    return;
+  }
+
+  const nameVal = document.getElementById("userName").value.trim();
+  const genderVal = document.getElementById("userGender").value;
+  const careerVal = document.getElementById("userCareer").value;
+  const dobVal = document.getElementById("userDob").value;
+  const calendarVal = document.getElementById("calendarType").value;
+  const hourVal = document.getElementById("userHour").value;
+
+  document.getElementById("resultSection").style.display = "flex";
+
+  let baziData = deriveBaZi(dobVal, hourVal, calendarVal);
+  let birthYear = baziData ? baziData.effectiveDate.getFullYear() : 1998;
+  let mingGua = calculateMingGua(birthYear, genderVal);
+
+  const processedStr = processZeroAndFive(cleaned);
+  let pairs = [];
+  for (let i = 0; i < processedStr.length - 1; i++) {
+    let code = processedStr.slice(i, i + 2);
+    if (MAGNETIC_FIELDS[code]) {
+      pairs.push({ code: code, ...MAGNETIC_FIELDS[code] });
+    }
+  }
+
+  let baseScore = 60;
+  let reasons = [];
+  let ruleChecks = [];
+  let pros = [];
+  let cons = [];
+  let fieldCounts = {};
+
+  pairs.forEach(p => {
+    fieldCounts[p.name] = (fieldCounts[p.name] || 0) + 1;
+    let starLabel = t.starNames[p.name] || p.name;
+    if (p.type === "吉") {
+      let pts = (5 - p.level) * 3;
+      baseScore += pts;
+      reasons.push(`${t.starAusp} 【${starLabel}】 (${p.code}): +${pts}`);
+    } else {
+      let pts = (5 - p.level) * 4;
+      baseScore -= pts;
+      reasons.push(`${t.starInausp} 【${starLabel}】 (${p.code}): -${pts}`);
+    }
+  });
+
+  // 0/5 polarity is explanatory only.
+  // It deliberately does NOT modify the overall score.
+  const polarityAdjust = 0;
+
+  if (baziData) {
+    let missingNums = [];
+    baziData.missing.forEach(elem => {
+      missingNums = missingNums.concat(ELEMENT_NUMBERS[elem]);
+    });
+
+    let matchedRemedy = missingNums.some(num => cleaned.includes(num));
+
+    if (matchedRemedy && baziData.missing.length > 0) {
+      baseScore += 12;
+      reasons.push(`🌟 ${t.remedyTrigger} (+12)`);
+      ruleChecks.push(`✨ ${t.remedyRule}`);
+    }
+
+    let guaMatched = mingGua.numbers.some(n => cleaned.includes(n));
+    if (guaMatched) {
+      baseScore += 8;
+      let guaName = mingGua.name[currentLang];
+      reasons.push(`🎯 ${t.guaResonance} [${guaName}] (+8)`);
+    }
+  }
+
+  let careerAnalysisText = "";
+  let careerScore = 60;
+  if (careerVal && CAREER_RULES[careerVal]) {
+    const rule = CAREER_RULES[careerVal];
+    const isLangEn = currentLang === 'en';
+    const langObj = isLangEn ? rule.en : rule.zh;
+    const hasNeededStar = fieldCounts[rule.neededStar] && fieldCounts[rule.neededStar] > 0;
+
+    if (hasNeededStar) {
+      baseScore += rule.pts;
+      careerScore = 90;
+      reasons.push(`💼 【${langObj.title}】: ${langObj.match}`);
+      pros.push(`💼 ${langObj.title}: ${langObj.match}`);
+      careerAnalysisText = `✅ <b>${langObj.title}:</b> ${langObj.match}`;
+    } else {
+      careerScore = 55;
+      careerAnalysisText = `⚠️ <b>${langObj.title}:</b> ${langObj.lack}`;
+      cons.push(`💼 ${langObj.title}: ${langObj.lack}`);
+    }
+  }
+
+  const fullNames = pairs.map(p => p.name).join("-");
+  if (fullNames.includes("天医-绝命") || fullNames.includes("绝命-天医")) {
+    baseScore += 10;
+    ruleChecks.push(t.tianYiJueMing);
+  }
+  if (fullNames.includes("延年-六煞") || fullNames.includes("六煞-延年")) {
+    baseScore += 10;
+    ruleChecks.push(t.yanNianLiuSha);
+  }
+
+  if (cleaned.endsWith("0")) {
+    baseScore -= 30;
+    reasons.push(t.zeroTail);
+    cons.push(t.zeroTailRisk);
+  }
+
+  let finalScore = Math.min(100, Math.max(0, baseScore));
+
+  let wealthScore = fieldCounts['天医'] ? 88 : 55;
+  let careerDimScore = fieldCounts['延年'] ? 85 : 50;
+  let healthScore = baziData ? (baziData.missing.length === 0 ? 92 : (baziData.missing.length === 1 ? 75 : 60)) : 75;
+
+  const scoreCircle = document.getElementById("scoreCircle");
+  scoreCircle.innerText = finalScore;
+  scoreCircle.style.borderColor = finalScore >= 80 ? 'var(--auspicious)' : (finalScore >= 60 ? 'var(--neutral)' : 'var(--ineuspicious)');
+
+  let guaDisplayName = `${mingGua.name[currentLang]} (${mingGua.group[currentLang]})`;
+  let evalText = finalScore >= 80 ? t.evalExcellent : (finalScore >= 60 ? t.evalBalanced : t.evalAdjust);
+
+  document.getElementById("scoreSummary").innerHTML = `
+    <b>${nameVal || t.userDefault}</b> · ${t.mingGuaLabel}: <span class="badge badge-gold">${guaDisplayName}</span><br>
+    ${t.matchDegree}: <b>${evalText}</b>
+  `;
+
+  if (baziData) {
+    document.getElementById("baziBlueprintCard").style.display = "block";
+    const p = baziData.pillars;
+    document.getElementById("baziGrid").innerHTML = `
+      <div class="bazi-box">
+        <div class="label">${t.pillarYear}</div>
+        <div class="stem">${t.stems[p.year.stem]}</div>
+        <div class="branch">${t.branches[p.year.branch]}</div>
+        <div class="elem">${t.elements[STEM_ELEMENTS[p.year.stem]]}${t.elements[BRANCH_ELEMENTS[p.year.branch]]}</div>
+      </div>
+      <div class="bazi-box">
+        <div class="label">${t.pillarMonth}</div>
+        <div class="stem">${t.stems[p.month.stem]}</div>
+        <div class="branch">${t.branches[p.month.branch]}</div>
+        <div class="elem">${t.elements[STEM_ELEMENTS[p.month.stem]]}${t.elements[BRANCH_ELEMENTS[p.month.branch]]}</div>
+      </div>
+      <div class="bazi-box">
+        <div class="label">${t.pillarDay}</div>
+        <div class="stem" style="color:#ffffff;">${t.stems[p.day.stem]}</div>
+        <div class="branch" style="color:#ffffff;">${t.branches[p.day.branch]}</div>
+        <div class="elem">${t.elements[STEM_ELEMENTS[p.day.stem]]}${t.elements[BRANCH_ELEMENTS[p.day.branch]]}</div>
+      </div>
+      <div class="bazi-box">
+        <div class="label">${t.pillarHour}</div>
+        <div class="stem">${p.hour ? t.stems[p.hour.stem] : '-'}</div>
+        <div class="branch">${p.hour ? t.branches[p.hour.branch] : '-'}</div>
+        <div class="elem">${p.hour ? t.elements[STEM_ELEMENTS[p.hour.stem]] + t.elements[BRANCH_ELEMENTS[p.hour.branch]] : '-'}</div>
+      </div>
+    `;
+
+    const elemCssMap = { "木": "wuxing-wood", "火": "wuxing-fire", "土": "wuxing-earth", "金": "wuxing-metal", "水": "wuxing-water" };
+
+    document.getElementById("wuxingBar").innerHTML = Object.keys(baziData.elemCounts).map(elem => `
+      <div class="wuxing-item ${elemCssMap[elem]}">
+        ${t.elements[elem]}: ${baziData.elemCounts[elem]}
+      </div>
+    `).join('');
+
+    let missingText = baziData.missing.length > 0 
+      ? baziData.missing.map(e => t.elements[e]).join(', ') 
+      : t.allBalanced;
+
+    let guaDir = mingGua.dir[currentLang];
+    let formattedDob = formatDateDDmmYYYY(baziData.effectiveDate);
+
+    document.getElementById("baziSummaryText").innerHTML = `
+      📌 <b>${currentLang === 'en' ? 'Birth Date' : '出生日期'}:</b> ${formattedDob}<br>
+      📌 <b>${t.dayMasterCore}:</b> ${t.stems[baziData.dayMaster]} (${t.elements[baziData.dayMasterElem]} ${t.yuanShen})<br>
+      📌 <b>${t.missingWeak}:</b> ${missingText} | 
+      <b>${t.usefulElem}:</b> <span style="color:var(--gold); font-weight:bold;">${t.elements[baziData.usefulElement]} (${ELEMENT_NUMBERS[baziData.usefulElement].join(',')})</span><br>
+      📌 <b>${t.afterGua}:</b> ${guaDisplayName} | <b>${t.auspiciousDir}:</b> ${guaDir}
+    `;
+
+    let luckPillars = calculateTenYearLuck(baziData, genderVal);
+    document.getElementById("tenYearLuckCard").style.display = "block";
+    document.getElementById("luckPillarsStack").innerHTML = luckPillars.map(lp => `
+      <div class="luck-row">
+        <div class="luck-row-header">
+          <span class="luck-row-age">${lp.startAge} - ${lp.endAge} ${t.ageUnit}</span>
+          <span class="luck-row-pillar">${lp.stemName}${lp.branchName}${t.luckPillarSuffix}</span>
+          <span class="luck-row-elem">[${lp.stemElemName}${lp.branchElemName}]</span>
+        </div>
+        <div class="luck-row-desc">
+          ${lp.desc}
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById("luckSummaryText").innerHTML = t.luckGuideHint;
+
+  } else {
+    document.getElementById("baziBlueprintCard").style.display = "none";
+    document.getElementById("tenYearLuckCard").style.display = "none";
+  }
+
+  document.getElementById("pairList").innerHTML = pairs.map(p => {
+    let starLabel = t.starNames[p.name] || p.name;
+    let isAusp = p.type === '吉';
+    let levelDisplay = currentLang === 'en' ? `Energy Lv${p.level}` : `${p.level}级能量`;
+
+    let careerText = typeof p.career === 'object' ? p.career[currentLang] : p.career;
+    let loveText = typeof p.love === 'object' ? p.love[currentLang] : p.love;
+    let studyText = typeof p.study === 'object' ? p.study[currentLang] : p.study;
+    let strategyText = typeof p.strategy === 'object' ? p.strategy[currentLang] : p.strategy;
+
+    return `
+      <div class="pair-card" style="border-color: ${isAusp ? 'var(--auspicious)' : 'var(--ineuspicious)'}">
+        <div class="pair-header">
+          <span class="num" style="color: ${isAusp ? 'var(--auspicious)' : 'var(--ineuspicious)'}">${p.code}</span>
+          <span class="desc" style="color: ${isAusp ? 'var(--auspicious)' : 'var(--ineuspicious)'}">${starLabel} (${levelDisplay})</span>
+        </div>
+        <div class="pair-details">
+          <div><span class="label">${t.lblCareerAspect}：</span><span>${careerText}</span></div>
+          <div><span class="label">${t.lblLoveAspect}：</span><span>${loveText}</span></div>
+          <div><span class="label">${t.lblStudyAspect}：</span><span>${studyText}</span></div>
+          <div><span class="label">${t.lblStrategyAspect}：</span><span>${strategyText}</span></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (fieldCounts['天医']) pros.push(t.dimWealthDescPos);
+  if (fieldCounts['延年']) pros.push(t.dimCareerDescPos);
+  if (fieldCounts['绝命']) cons.push(currentLang === 'en' ? 'Jue Ming star present: High volatility in investments.' : '绝命磁场极易导致冲动开支与破财。');
+
+  document.getElementById("proList").innerHTML = pros.map(p => `<li>${p}</li>`).join('');
+  document.getElementById("conList").innerHTML = cons.map(c => `<li>${c}</li>`).join('');
+  document.getElementById("reasonList").innerHTML = reasons.map(r => `<li>${r}</li>`).join('');
+  document.getElementById("ruleCheckList").innerHTML = ruleChecks.map(c => `<p style="margin-bottom:6px; font-size:0.85rem;">${c}</p>`).join('');
+  document.getElementById("ruleCheckList").innerHTML += buildPolarityRuleChecks(cleaned, pairs, polarityAdjust, t).join('');
+
+  if (baziData) {
+    let missingElemList = baziData.missing.map(e => t.elements[e]).join(', ');
+    let usefulElemName = t.elements[baziData.usefulElement];
+    let careerExtraGuide = careerVal && CAREER_RULES[careerVal] ? `<p>🎯 <b>${t.dimOccupation}:</b> ${currentLang === 'en' ? CAREER_RULES[careerVal].en.desc : CAREER_RULES[careerVal].zh.desc}</p>` : "";
+
+    document.getElementById("recomContent").innerHTML = `
+      <p><b>${t.recomHeader}</b></p>
+      <p>• ${t.yourDayMasterIs} <b>${t.stems[baziData.dayMaster]} (${t.elements[baziData.dayMasterElem]})</b>，${baziData.missing.length > 0 ? `${t.lacksElem} <b>${missingElemList}</b>。` : t.fiveElemBalanced}</p>
+      <p>• ${t.recomDigits} <span style="color:var(--gold); font-weight:bold; font-size:1.1rem;">${ELEMENT_NUMBERS[baziData.usefulElement].join(', ')}</span> (${usefulElemName})。</p>
+      <p>• ${t.recomCombo}</p>
+      ${careerExtraGuide}
+    `;
+  } else {
+    document.getElementById("recomContent").innerHTML = t.noDobRecom;
+  }
+
+  document.getElementById("dimensionTable").innerHTML = `
+    <tr>
+      <td>${t.dimWealth}</td>
+      <td><span class="badge ${wealthScore >= 80 ? 'badge-gold' : 'badge-score'}">${wealthScore}</span></td>
+      <td>${fieldCounts['天医'] ? t.dimWealthDescPos : t.dimWealthDescNeg}</td>
+    </tr>
+    <tr>
+      <td>${t.dimCareer}</td>
+      <td><span class="badge ${careerDimScore >= 80 ? 'badge-gold' : 'badge-score'}">${careerDimScore}</span></td>
+      <td>${fieldCounts['延年'] ? t.dimCareerDescPos : t.dimCareerDescNeg}</td>
+    </tr>
+    <tr>
+      <td>${t.dimHealth}</td>
+      <td><span class="badge ${healthScore >= 80 ? 'badge-gold' : 'badge-score'}">${healthScore}</span></td>
+      <td>${healthScore >= 80 ? t.dimHealthDescPos : t.dimHealthDescNeg}</td>
+    </tr>
+    ${careerVal && CAREER_RULES[careerVal] ? `
+    <tr>
+      <td>${t.dimOccupation}</td>
+      <td><span class="badge ${careerScore >= 80 ? 'badge-gold' : 'badge-score'}">${careerScore}</span></td>
+      <td>${careerAnalysisText}</td>
+    </tr>
+    ` : ''}
+  `;
+
+  document.getElementById("elemGuideGrid").innerHTML = Object.keys(FIVE_ELEMENTS_GUIDE).map(eKey => {
+    let item = FIVE_ELEMENTS_GUIDE[eKey];
+    let langData = item[currentLang] || item["zh-CN"];
+    let elemName = item.name[currentLang];
+
+    return `
+      <div class="elem-card">
+        <div class="elem-card-header ${item.colorClass}">
+          <span>${elemName}</span>
+        </div>
+        <p><strong>${currentLang === 'en' ? 'Core Essence' : '象意与格局'}：</strong>${langData.benefit}</p>
+        <p><strong>${currentLang === 'en' ? 'Deficiency Impact' : '缺失隐患'}：</strong>${langData.whyNeed}</p>
+        <p><strong>${currentLang === 'en' ? 'Remedy Actions' : '增益补救'}：</strong>${langData.howToGet}</p>
+      </div>
+    `;
+  }).join('');
+}
+</script>
+
+</body>
+</html>
